@@ -24,27 +24,23 @@ import org.apache.camel.impl.DefaultEndpoint;
 /**
  * Represents a filewatcher endpoint.
  */
-public class FileWatcherEndpoint extends DefaultEndpoint {
+class FileWatcherEndpoint extends DefaultEndpoint {
 
-    public FileWatcherEndpoint() {
-    }
-
-    public FileWatcherEndpoint(String uri, FileWatcherComponent component) {
+    FileWatcherEndpoint(String uri, FileWatcherComponent component) {
         super(uri, component);
     }
 
-    public FileWatcherEndpoint(String endpointUri) {
-        super(endpointUri);
-    }
-
+    @Override
     public Producer createProducer() throws Exception {
-        throw new UnsupportedOperationException("The file watcher endpoint can only act as a consumer, not as a producer");
+        throw new UnsupportedOperationException("The file watcher endpoint can only create consumers, not producers");
     }
 
+    @Override
     public Consumer createConsumer(Processor processor) throws Exception {
         return new FileWatcherConsumer(this, processor);
     }
 
+    @Override
     public boolean isSingleton() {
         return true;
     }

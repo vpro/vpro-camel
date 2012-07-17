@@ -26,12 +26,10 @@ import org.apache.camel.util.FileUtil;
 
 public class FileWatcherConsumer extends DefaultScheduledPollConsumer {
     public static enum Event {
-        STARTED,CREATED,UPDATED,DELETED;
+        STARTED, CREATED, UPDATED, DELETED
     }
 
     private final FileWatcherEndpoint endpoint;
-
-    private String watchedFilePath;
 
     private File watchedFile;
 
@@ -39,7 +37,7 @@ public class FileWatcherConsumer extends DefaultScheduledPollConsumer {
 
     private boolean firstPoll = true;
 
-    public FileWatcherConsumer(FileWatcherEndpoint endpoint, Processor processor) {
+    FileWatcherConsumer(FileWatcherEndpoint endpoint, Processor processor) {
         super(endpoint, processor);
         this.endpoint = endpoint;
     }
@@ -84,7 +82,7 @@ public class FileWatcherConsumer extends DefaultScheduledPollConsumer {
 
     @Override
     protected void doStart() throws Exception {
-        watchedFilePath = resolvePath();
+        String watchedFilePath = resolvePath();
         watchedFile = new File(watchedFilePath);
 
         if(watchedFile.isDirectory()) {
@@ -102,7 +100,7 @@ public class FileWatcherConsumer extends DefaultScheduledPollConsumer {
     protected void doStop() throws Exception {
         super.doStop();
         previousLastModified = 0;
-        firstPoll=true;
+        firstPoll = true;
     }
 
     private boolean noFileSinceStartup() {

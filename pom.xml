@@ -10,7 +10,7 @@
 
   <groupId>nl.vpro.camel</groupId>
   <artifactId>camel-parent</artifactId>
-  <version>1.0</version>
+  <version>1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
@@ -18,8 +18,8 @@
   </modules>
 
   <scm>
-    <connection>scm:svn:svn+ssh://onthemove.vpro.nl/export/svn/nl/vpro/camel/tags/REL-1.0</connection>
-    <developerConnection>scm:svn:svn+ssh://onthemove.vpro.nl/export/svn/nl/vpro/camel/tags/REL-1.0</developerConnection>
-    <url>https://subversion.vpro.nl/cgi-bin/viewvc.cgi/nl/vpro/camel/tags/REL-1.0</url>
+    <connection>scm:svn:svn+ssh://onthemove.vpro.nl/export/svn/nl/vpro/camel/trunk</connection>
+    <developerConnection>scm:svn:svn+ssh://onthemove.vpro.nl/export/svn/nl/vpro/camel/trunk</developerConnection>
+    <url>https://subversion.vpro.nl/cgi-bin/viewvc.cgi/nl/vpro/camel/trunk</url>
   </scm>
 </project>

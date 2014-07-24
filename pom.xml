@@ -5,7 +5,7 @@
   <parent>
     <groupId>nl.publiekeomroep</groupId>
     <artifactId>poms-parent</artifactId>
-    <version>1.5.0</version>
+    <version>3.2-SNAPSHOT</version>
   </parent>
 
   <groupId>nl.vpro.camel</groupId>
@@ -15,6 +15,7 @@
 
   <modules>
     <module>camel-filewatcher</module>
+    <module>camel-newrelic</module>
   </modules>
 
   <scm>

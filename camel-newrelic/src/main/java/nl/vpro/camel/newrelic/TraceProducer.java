@@ -28,7 +28,7 @@ public class TraceProducer extends DefaultProducer {
         this.endpoint = (TraceEndpoint)endpoint;
     }
 
-    @Trace(dispatcher = true)
+    //    @Trace(dispatcher = true)
     public void process(Exchange exchange) throws Exception {
         if(endpoint.getConsumers().isEmpty()) {
             LOG.warn("No consumers available on endpoint: {} to process: {}", endpoint, exchange);

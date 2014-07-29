@@ -33,11 +33,21 @@ public class TraceProducer extends DefaultProducer {
         } else {
             for(DefaultConsumer consumer : endpoint.getConsumers()) {
                 String traceId = endpoint.getEndpointKey();
+                NewRelic.setTransactionName(null, traceId);
 
                 long start = System.nanoTime();
                 consumer.getProcessor().process(exchange);
                 long elapsedTime = System.nanoTime() - start;
-                NewRelic.recordMetric(traceId, elapsedTime);
+                NewRelic.recordMetric(traceId, elapsedTime / 1000);
+
+                Exception error = exchange.getException();
+                if(error == null) {
+                    // handled exception
+                    error = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
+                }
+                if(error != null) {
+                    NewRelic.noticeError(error);
+                }
 
                 NewRelic.incrementCounter(traceId);
             }

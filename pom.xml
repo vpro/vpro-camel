@@ -19,8 +19,8 @@
   </modules>
 
   <scm>
-    <connection>scm:svn:svn+ssh://onthemove.vpro.nl/export/svn/nl/vpro/camel/trunk</connection>
-    <developerConnection>scm:svn:svn+ssh://onthemove.vpro.nl/export/svn/nl/vpro/camel/trunk</developerConnection>
-    <url>https://subversion.vpro.nl/cgi-bin/viewvc.cgi/nl/vpro/camel/trunk</url>
+    <connection>scm:svn:svn+ssh://onthemove.vpro.nl/export/svn/nl/vpro/camel/branches/REL-1.1-SNAPSHOT</connection>
+    <developerConnection>scm:svn:svn+ssh://onthemove.vpro.nl/export/svn/nl/vpro/camel/branches/REL-1.1-SNAPSHOT</developerConnection>
+    <url>https://subversion.vpro.nl/cgi-bin/viewvc.cgi/nl/vpro/camel/branches/REL-1.1-SNAPSHOT</url>
   </scm>
 </project>

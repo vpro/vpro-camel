@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.newrelic.api.agent.NewRelic;
-import com.newrelic.api.agent.Trace;
 
 /**
  * @author Roelof Jan Koekoek
@@ -29,6 +28,7 @@ public class TraceProducer extends DefaultProducer {
     }
 
     //    @Trace(dispatcher = true)
+    @Override
     public void process(Exchange exchange) throws Exception {
         if(endpoint.getConsumers().isEmpty()) {
             LOG.warn("No consumers available on endpoint: {} to process: {}", endpoint, exchange);

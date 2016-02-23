@@ -3,9 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>nl.publiekeomroep</groupId>
+    <groupId>nl.vpro.poms</groupId>
     <artifactId>poms-parent</artifactId>
-    <version>3.2.0</version>
+    <version>4.3-SNAPSHOT</version>
   </parent>
 
   <groupId>nl.vpro.camel</groupId>

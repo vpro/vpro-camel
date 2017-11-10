@@ -5,7 +5,7 @@
   <parent>
     <groupId>nl.vpro.poms</groupId>
     <artifactId>poms-parent</artifactId>
-    <version>4.3-SNAPSHOT</version>
+    <version>5.5.0</version>
   </parent>
 
   <groupId>nl.vpro.camel</groupId>
@@ -33,7 +33,6 @@
       </releases>
       <snapshots>
         <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
       </snapshots>
     </repository>
   </repositories>
@@ -46,7 +45,6 @@
       </releases>
       <snapshots>
         <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
       </snapshots>
     </pluginRepository>
   </pluginRepositories>

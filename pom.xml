@@ -2,12 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>nl.vpro.poms</groupId>
-    <artifactId>poms-parent</artifactId>
-    <version>5.5.0</version>
-  </parent>
-
   <groupId>nl.vpro.camel</groupId>
   <artifactId>camel-parent</artifactId>
   <version>1.2-SNAPSHOT</version>
@@ -23,6 +17,41 @@
     <developerConnection>scm:svn:https://onthemove.vpro.nl/repo/nl/vpro/camel/trunk</developerConnection>
     <url>https://subversion.vpro.nl/viewvc/nl/vpro/camel/trunk</url>
   </scm>
+
+  <properties>
+    <camel.version>2.21.1</camel.version>
+    <slf4j.version>1.7.25</slf4j.version>
+    <newrelic.version>4.1.0</newrelic.version>
+  </properties>
+
+  <build>
+    <defaultGoal>install</defaultGoal>
+  </build>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-core</artifactId>
+        <version>${camel.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-test</artifactId>
+        <version>${camel.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+       <dependency>
+         <groupId>com.newrelic.agent.java</groupId>
+         <artifactId>newrelic-api</artifactId>
+         <version>${newrelic.version}</version>
+       </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <repositories>
     <repository>

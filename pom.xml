@@ -14,9 +14,23 @@
 
   <scm>
     <connection>scm:svn:https://subversion.vpro.nl/repo/nl/vpro/camel/trunk</connection>
-    <developerConnection>scm:svn:https://onthemove.vpro.nl/repo/nl/vpro/camel/trunk</developerConnection>
+    <developerConnection>scm:svn:https://subversion.vpro.nl/repo/nl/vpro/camel/trunk</developerConnection>
     <url>https://subversion.vpro.nl/viewvc/nl/vpro/camel/trunk</url>
   </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>nexus</id>
+      <name>Nexus releases</name>
+      <url>https://nexus.vpro.nl/content/repositories/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>nexus</id>
+      <name>Nexus snapshots</name>
+      <url>https://nexus.vpro.nl/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+
 
   <properties>
     <camel.version>2.21.1</camel.version>

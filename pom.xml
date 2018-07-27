@@ -13,9 +13,9 @@
   </modules>
 
   <scm>
-    <connection>scm:svn:https://subversion.vpro.nl/repo/nl/vpro/camel/trunk</connection>
-    <developerConnection>scm:svn:https://subversion.vpro.nl/repo/nl/vpro/camel/trunk</developerConnection>
-    <url>https://subversion.vpro.nl/viewvc/nl/vpro/camel/trunk</url>
+    <connection>scm:svn:https://subversion.vpro.nl/repo/nl/vpro/camel/branches/REL-1.2-SNAPSHOT</connection>
+    <developerConnection>scm:svn:https://subversion.vpro.nl/repo/nl/vpro/camel/branches/REL-1.2-SNAPSHOT</developerConnection>
+    <url>https://subversion.vpro.nl/viewvc/nl/vpro/camel/branches/REL-1.2-SNAPSHOT</url>
   </scm>
 
   <distributionManagement>

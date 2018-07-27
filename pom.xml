@@ -50,6 +50,26 @@
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.5.3</version>
+        <configuration>
+          <branchName>REL-${project.version}</branchName>
+          <tagNameFormat>REL-@{project.version}</tagNameFormat>
+        </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>3.0.1</version>
+          <configuration>
+            <doclint>none</doclint>
+            <additionalJOption>-quiet</additionalJOption>
+            <failOnError>false</failOnError>
+          </configuration>
+        </plugin>
+
     </plugins>
   </build>
 

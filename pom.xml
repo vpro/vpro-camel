@@ -7,30 +7,35 @@
   <version>1.3-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <inceptionYear>2012</inceptionYear>
+  <description>Various apache camel components</description>
+  <url>https://github.com/vpro/vpro-camel</url>
+
   <modules>
     <module>camel-filewatcher</module>
     <module>camel-newrelic</module>
   </modules>
 
+
+  <licenses>
+    <license>
+      <name>GPLv3</name>
+      <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+    </license>
+  </licenses>
+
+  <ciManagement>
+    <system>Travis CI</system>
+    <url>https://travis-ci.org/vpro/vpro-camel</url>
+  </ciManagement>
+
+
   <scm>
-    <connection>scm:svn:https://subversion.vpro.nl/repo/nl/vpro/camel/trunk</connection>
-    <developerConnection>scm:svn:https://subversion.vpro.nl/repo/nl/vpro/camel/trunk</developerConnection>
-    <url>https://subversion.vpro.nl/viewvc/nl/vpro/camel/trunk</url>
+    <connection>scm:git:git://git@github.com/vpro/vpro-camel.git</connection>
+    <developerConnection>scm:git:git@github.com:vpro/vpro-camel.git</developerConnection>
+    <url>https://github.com/vpro/vpro-camel</url>
+    <tag>HEAD</tag>
   </scm>
-
-  <distributionManagement>
-    <repository>
-      <id>nexus</id>
-      <name>Nexus releases</name>
-      <url>https://nexus.vpro.nl/content/repositories/releases</url>
-    </repository>
-    <snapshotRepository>
-      <id>nexus</id>
-      <name>Nexus snapshots</name>
-      <url>https://nexus.vpro.nl/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
-
 
   <properties>
     <camel.version>2.21.1</camel.version>
@@ -98,28 +103,76 @@
     </dependencies>
   </dependencyManagement>
 
-  <repositories>
+   <profiles>
+    <profile>
+      <id>deploy</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.6.5</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>vpro-ossrh</serverId>
+              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>2.4</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.10.3</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>vpro-ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
     <repository>
-      <id>vpro</id>
-      <url>https://nexus.vpro.nl/content/groups/public</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
+      <id>vpro-ossrh-release</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
-  </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>vpro</id>
-      <url>https://nexus.vpro.nl/content/groups/public</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
+  </distributionManagement>
+
 </project>

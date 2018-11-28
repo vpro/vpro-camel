@@ -5,6 +5,7 @@
   <parent>
     <artifactId>camel-parent</artifactId>
     <groupId>nl.vpro.camel</groupId>
+    <version>1.4-SNAPSHOT</version>
   </parent>
 
   <artifactId>camel-newrelic</artifactId>

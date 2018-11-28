@@ -34,7 +34,7 @@
     <connection>scm:git:git://git@github.com/vpro/vpro-camel.git</connection>
     <developerConnection>scm:git:git@github.com:vpro/vpro-camel.git</developerConnection>
     <url>https://github.com/vpro/vpro-camel</url>
-    <tag>HEAD</tag>
+    <tag>REL-1.3-SNAPSHOT</tag>
   </scm>
 
   <properties>

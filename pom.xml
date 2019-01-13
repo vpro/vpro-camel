@@ -54,9 +54,9 @@
   </scm>
 
   <properties>
-    <camel.version>2.21.1</camel.version>
+    <camel.version>2.23.0</camel.version>
     <slf4j.version>1.7.25</slf4j.version>
-    <newrelic.version>4.1.0</newrelic.version>
+    <newrelic.version>4.9.0</newrelic.version>
   </properties>
 
   <build>

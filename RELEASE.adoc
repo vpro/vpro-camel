@@ -1,0 +1,6 @@
+[source,bash]
+----
+mvn release:branch -DbranchName=REL-1.4-SNAPSHOT -DdevelopmentVersion=1.5-SNAPSHOT
+git checkout REL-1.4-SNAPSHOT
+mvn -Pdeploy release:prepare release:perform -DreleaseVersion=1.4.0 -DdevelopmentVersion=1.4.1-SNAPSHOT
+----

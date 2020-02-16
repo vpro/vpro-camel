@@ -54,9 +54,9 @@
   </scm>
 
   <properties>
-    <camel.version>2.24.1</camel.version>
+    <camel.version>3.0.1</camel.version>
     <slf4j.version>1.7.26</slf4j.version>
-    <newrelic.version>5.3.0</newrelic.version>
+    <newrelic.version>5.10.0</newrelic.version>
   </properties>
 
   <build>
@@ -64,7 +64,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.7.0</version>
+        <version>3.8.1</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
@@ -98,13 +98,10 @@
     <dependencies>
       <dependency>
         <groupId>org.apache.camel</groupId>
-        <artifactId>camel-core</artifactId>
+        <artifactId>camel-bom</artifactId>
         <version>${camel.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.camel</groupId>
-        <artifactId>camel-test</artifactId>
-        <version>${camel.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>

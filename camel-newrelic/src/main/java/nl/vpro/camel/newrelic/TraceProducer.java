@@ -1,17 +1,16 @@
-/**
+/*
  * Copyright (C) 2014 All rights reserved
  * VPRO The Netherlands
  */
 package nl.vpro.camel.newrelic;
 
+import com.newrelic.api.agent.NewRelic;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
-import org.apache.camel.impl.DefaultConsumer;
-import org.apache.camel.impl.DefaultProducer;
+import org.apache.camel.support.DefaultConsumer;
+import org.apache.camel.support.DefaultProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.newrelic.api.agent.NewRelic;
 
 /**
  * @author Roelof Jan Koekoek
@@ -40,7 +39,7 @@ public class TraceProducer extends DefaultProducer {
                 long start = System.nanoTime();
                 consumer.getProcessor().process(exchange);
                 long elapsedTime = System.nanoTime() - start;
-                NewRelic.recordMetric(traceId, elapsedTime / 1000);
+                NewRelic.recordMetric(traceId, elapsedTime / 1000f);
 
                 Exception error = exchange.getException();
                 if(error == null) {

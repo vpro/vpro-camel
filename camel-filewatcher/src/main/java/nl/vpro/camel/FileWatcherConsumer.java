@@ -16,16 +16,16 @@
  */
 package nl.vpro.camel;
 
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
+import org.apache.camel.support.DefaultScheduledPollConsumer;
+import org.apache.camel.util.FileUtil;
+
 import java.io.File;
 import java.net.URI;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
-import org.apache.camel.impl.DefaultScheduledPollConsumer;
-import org.apache.camel.util.FileUtil;
-
 public class FileWatcherConsumer extends DefaultScheduledPollConsumer {
-    public static enum Event {
+    public enum Event {
         STARTED, CREATED, UPDATED, DELETED
     }
 
@@ -120,7 +120,7 @@ public class FileWatcherConsumer extends DefaultScheduledPollConsumer {
     }
 
     private String resolvePath() {
-        URI uri = endpoint.getEndpointConfiguration().getURI();
+        URI uri = URI.create(endpoint.getEndpointUri());
         String authority = uri.getAuthority();
         String path = uri.getPath();
 

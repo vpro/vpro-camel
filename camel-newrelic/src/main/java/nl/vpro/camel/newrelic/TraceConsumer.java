@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2014 All rights reserved
  * VPRO The Netherlands
  */
@@ -6,7 +6,7 @@ package nl.vpro.camel.newrelic;
 
 import org.apache.camel.Endpoint;
 import org.apache.camel.Processor;
-import org.apache.camel.impl.DefaultConsumer;
+import org.apache.camel.support.DefaultConsumer;
 
 /**
  * @author Roelof Jan Koekoek
@@ -22,7 +22,7 @@ public class TraceConsumer extends DefaultConsumer {
     }
 
     @Override
-    public void start() throws Exception {
+    public void start() {
         if(!endpoint.getConsumers().contains(this)) {
             if(!endpoint.getConsumers().isEmpty()) {
                 throw new IllegalStateException("Endpoint " + endpoint.getEndpointUri()
@@ -34,7 +34,7 @@ public class TraceConsumer extends DefaultConsumer {
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         super.stop();
         endpoint.getConsumers().remove(this);
     }

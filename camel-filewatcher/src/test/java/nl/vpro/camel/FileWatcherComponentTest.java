@@ -16,17 +16,19 @@
  */
 package nl.vpro.camel;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.junit4.CamelTestSupport;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.util.List;
+
+import org.apache.camel.Exchange;
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.test.junit5.CamelTestSupport;
+import org.junit.jupiter.api.*;
+
+import static org.apache.camel.test.junit5.TestSupport.assertInMessageBodyEquals;
+import static org.apache.camel.test.junit5.TestSupport.assertInMessageHeader;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class FileWatcherComponentTest extends CamelTestSupport {
 
@@ -34,7 +36,7 @@ public class FileWatcherComponentTest extends CamelTestSupport {
 
     private static File file;
 
-    @BeforeClass
+    @BeforeAll
     public static void createFile() throws Exception {
         file = new File(filePath);
         if(file.exists()) {
@@ -47,7 +49,7 @@ public class FileWatcherComponentTest extends CamelTestSupport {
         writer.close();
     }
 
-    @AfterClass
+    @AfterAll
     public static void deleteFile() {
         if(file.exists()) {
             file.delete();

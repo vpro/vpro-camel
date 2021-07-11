@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,20 +16,18 @@
  */
 package nl.vpro.camel;
 
+import java.io.File;
+import java.net.URI;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.support.DefaultScheduledPollConsumer;
 import org.apache.camel.util.FileUtil;
 
-import java.io.File;
-import java.net.URI;
-
 public class FileWatcherConsumer extends DefaultScheduledPollConsumer {
     public enum Event {
         STARTED, CREATED, UPDATED, DELETED
     }
-
-    private final FileWatcherEndpoint endpoint;
 
     private File watchedFile;
 
@@ -39,7 +37,6 @@ public class FileWatcherConsumer extends DefaultScheduledPollConsumer {
 
     FileWatcherConsumer(FileWatcherEndpoint endpoint, Processor processor) {
         super(endpoint, processor);
-        this.endpoint = endpoint;
     }
 
     @Override
@@ -86,7 +83,7 @@ public class FileWatcherConsumer extends DefaultScheduledPollConsumer {
         watchedFile = new File(watchedFilePath);
 
         if(watchedFile.isDirectory()) {
-            throw new IllegalArgumentException("Endpoint " + endpoint + " should not point to a directory + " + watchedFile.getAbsolutePath());
+            throw new IllegalArgumentException("Endpoint " + getEndpoint() + " should not point to a directory + " + watchedFile.getAbsolutePath());
         }
 
         if(watchedFile.exists() && !watchedFile.canRead()) {
@@ -120,7 +117,7 @@ public class FileWatcherConsumer extends DefaultScheduledPollConsumer {
     }
 
     private String resolvePath() {
-        URI uri = URI.create(endpoint.getEndpointUri());
+        URI uri = URI.create(getEndpoint().getEndpointUri());
         String authority = uri.getAuthority();
         String path = uri.getPath();
 
@@ -132,14 +129,14 @@ public class FileWatcherConsumer extends DefaultScheduledPollConsumer {
     }
 
     private void exchangeFileDeleted() throws Exception {
-        Exchange exchange = endpoint.createExchange();
+        Exchange exchange = getEndpoint().createExchange();
         exchange.getIn().setBody(null);
         exchange.getIn().setHeader("fileWatchEvent", Event.DELETED.name());
         process(exchange);
     }
 
     private void exchangeFile(Event event) throws Exception {
-        Exchange exchange = endpoint.createExchange();
+        Exchange exchange = getEndpoint().createExchange();
         exchange.getIn().setHeader("fileWatchEvent", event.name());
         exchange.getIn().setBody(watchedFile);
         process(exchange);

@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -31,7 +31,7 @@ class FileWatcherEndpoint extends DefaultEndpoint {
     }
 
     @Override
-    public Producer createProducer() throws Exception {
+    public Producer createProducer() {
         throw new UnsupportedOperationException("The file watcher endpoint can only create consumers, not producers");
     }
 

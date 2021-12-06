@@ -14,7 +14,7 @@ import org.apache.camel.support.DefaultConsumer;
  */
 public class TraceConsumer extends DefaultConsumer {
 
-    private TraceEndpoint endpoint;
+    private final TraceEndpoint endpoint;
 
     public TraceConsumer(Endpoint endpoint, Processor processor) {
         super(endpoint, processor);

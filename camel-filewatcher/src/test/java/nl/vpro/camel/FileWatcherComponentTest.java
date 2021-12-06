@@ -19,17 +19,16 @@ package nl.vpro.camel;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.List;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
-import org.junit.jupiter.api.*;
-
 import static org.apache.camel.test.junit5.TestSupport.assertInMessageBodyEquals;
 import static org.apache.camel.test.junit5.TestSupport.assertInMessageHeader;
+import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class FileWatcherComponentTest extends CamelTestSupport {
 
     private static final String filePath = "fileWatcherTest.txt";
@@ -39,7 +38,7 @@ public class FileWatcherComponentTest extends CamelTestSupport {
     @BeforeAll
     public static void createFile() throws Exception {
         file = new File(filePath);
-        if(file.exists()) {
+        if (file.exists()) {
             throw new IllegalStateException("A test(?) file exists already at: " + file.getAbsolutePath());
         }
 
@@ -51,7 +50,7 @@ public class FileWatcherComponentTest extends CamelTestSupport {
 
     @AfterAll
     public static void deleteFile() {
-        if(file.exists()) {
+        if (file.exists()) {
             file.delete();
         }
     }
@@ -59,6 +58,7 @@ public class FileWatcherComponentTest extends CamelTestSupport {
     @Test
     public void testFileWatcherForAllEvents() throws Exception {
         // Started
+
         MockEndpoint mock = getMockEndpoint("mock:result");
         mock.expectedMinimumMessageCount(1);
         List<Exchange> exchanges = mock.getExchanges();
@@ -109,8 +109,9 @@ public class FileWatcherComponentTest extends CamelTestSupport {
     }
 
     @Override
-    protected RouteBuilder createRouteBuilder() throws Exception {
+    protected RouteBuilder createRouteBuilder() {
         return new RouteBuilder() {
+            @Override
             public void configure() {
                 from("filewatcher:" + filePath)
                     .to("mock:result");

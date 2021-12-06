@@ -20,11 +20,16 @@ import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.support.DefaultEndpoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a filewatcher endpoint.
  */
 class FileWatcherEndpoint extends DefaultEndpoint {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FileWatcherEndpoint.class);
+
 
     FileWatcherEndpoint(String uri, FileWatcherComponent component) {
         super(uri, component);
@@ -36,8 +41,10 @@ class FileWatcherEndpoint extends DefaultEndpoint {
     }
 
     @Override
-    public Consumer createConsumer(Processor processor) throws Exception {
-        return new FileWatcherConsumer(this, processor);
+    public Consumer createConsumer(Processor processor) {
+        FileWatcherConsumer consumer = new FileWatcherConsumer(this, processor);
+        LOG.info("Created {}", consumer,  new Exception());
+        return consumer;
     }
 
     @Override

@@ -78,7 +78,7 @@ public class FileWatcherConsumer extends DefaultScheduledPollConsumer {
     }
 
     @Override
-    protected void doStart() throws Exception {
+    protected void doInit() throws Exception {
         String watchedFilePath = resolvePath();
         watchedFile = new File(watchedFilePath);
 
@@ -89,14 +89,10 @@ public class FileWatcherConsumer extends DefaultScheduledPollConsumer {
         if(watchedFile.exists() && !watchedFile.canRead()) {
             throw new SecurityException("Can not read file: " + watchedFile.getAbsolutePath());
         }
-
-        super.doStart();
+        // causes stack overflow in camel > 2.8
+        //super.doInit();
     }
 
-    @Override
-    protected void doInit() throws Exception {
-
-    }
 
     @Override
     protected void doStop() throws Exception {

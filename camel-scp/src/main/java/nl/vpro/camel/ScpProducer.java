@@ -1,28 +1,28 @@
 package nl.vpro.camel;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 
-import java.io.OutputStream;
+import java.io.*;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultProducer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Level;
 
-import nl.vpro.logging.LoggerOutputStream;
+import nl.vpro.logging.Log4j2OutputStream;
 import nl.vpro.util.CommandExecutor;
 import nl.vpro.util.CommandExecutorImpl;
+import nl.vpro.util.Ssh;
 
 /**
  * The Scp producer.
  */
-@Slf4j
+@Log4j2
 public class ScpProducer extends DefaultProducer {
-    private static final Logger LOG = LoggerFactory.getLogger(ScpProducer.class);
     private ScpEndpoint endpoint;
 
-    private static final OutputStream STDOUT = LoggerOutputStream.debug(log);
-    private static final OutputStream STDERR = LoggerOutputStream.error(log);
+    private static final OutputStream STDOUT = Log4j2OutputStream.debug(log, true);
+    private static final OutputStream STDERR = Log4j2OutputStream.error(log, true);
 
     private final CommandExecutor scp = CommandExecutorImpl
         .builder()
@@ -35,23 +35,43 @@ public class ScpProducer extends DefaultProducer {
     }
 
     public void process(Exchange exchange) throws Exception {
-        System.out.println(exchange.getIn().getBody());
-        final String host = endpoint.getHost();
-        final int port = endpoint.getPort();
-        final String privateKeyFile = endpoint.getPrivateKeyFile();
-        // TODO: configure endpoint-parameters and match 'm with scp.execute
-        System.out.println(host);
-        System.out.println(port);
-        System.out.println(privateKeyFile);
+        final InputStream inputStream = exchange.getIn().getBody(InputStream.class);
+        final String fileName = exchange.getIn().getHeader(Exchange.FILE_NAME, String.class);
+        send(inputStream, fileName);
+    }
 
-//        scp.execute(
-//            STDOUT,
-//            STDERR,
-//            "-i",
-//            "/home/molenaar/.ssh/id_rsa", // TODO: fix dynamic path
-//            "/home/molenaar/Downloads/Pajama_Sam.png", // source
-//            "poms2signiant@upload-testsites.omroep.nl:tmp" // destination
-//        );
+    private void send(final InputStream inputStream, final String fileName) throws IOException {
+        File sourceFile = File.createTempFile(ScpProducer.class.getName(), "tmp");
+        try (OutputStream outputStream = new FileOutputStream(sourceFile)) {
+            IOUtils.copy(inputStream, outputStream);
+        }
+        try {
+            final String remoteHostName = endpoint.getRemoteHostName();
+            final String remoteUser = endpoint.getRemoteUser();
+            final String remotePath = endpoint.getRemotePath();
+            final String port = endpoint.getPort();
+            final File privateKeyFile = new File(endpoint.getPrivateKeyFile());
+            if (!privateKeyFile.exists() || !privateKeyFile.isFile()) {
+                throw new IllegalArgumentException("Private key file " + privateKeyFile.getAbsolutePath() + " does not exist or is not a file");
+            }
+            if (scp.execute(
+                STDOUT,
+                STDERR,
+                "-P",
+                port,
+                "-i",
+                privateKeyFile.getAbsolutePath(),
+                sourceFile.getAbsolutePath(), // source
+                remoteUser + "@" + remoteHostName + ":" + remotePath + "/" + fileName // destination
+            ) != 0) {
+                throw new Ssh.SshException("Failed to send input stream to  " + remoteHostName + ":" + remotePath + " and port " + port);
+            }
+        }
+        finally {
+            sourceFile.delete();
+        }
     }
 
 }
+
+

@@ -7,39 +7,48 @@ import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
-import org.apache.camel.spi.Metadata;
-import org.apache.camel.spi.UriEndpoint;
-import org.apache.camel.spi.UriParam;
-import org.apache.camel.spi.UriPath;
+import org.apache.camel.spi.*;
 
 /**
  * Represents a Scp endpoint.
  */
 @UriEndpoint(firstVersion = "1.3.2-SNAPSHOT", scheme = "scp", title = "Scp", syntax="scp:username@host:port/privateKeyFile",
              producerOnly = true, label = "file")
+@UriParams
 @Getter
 @Setter
 public class ScpEndpoint extends DefaultEndpoint {
     @UriParam(
-        label = "host",
-        description = "Host (either remote or local) where the file(s) should be transferred to"
+        label = "Remote host",
+        description = "Remote host where the file(s) should be transferred to"
     )
     @Metadata(required = "true")
-    private String host;
+    private String remoteHostName;
+    @UriParam(
+        label = "Remote user",
+        description = "Remote user with access to the remote host"
+    )
+    @Metadata(required = "true")
+    private String remoteUser;
+    @UriParam(
+        label = "Remote path",
+        description = "Location on the remote host where the file(s) should be transferred to"
+    )
+    @Metadata(required = "true")
+    private String remotePath;
     @UriParam(
         label = "port",
         defaultValue = "22",
         description = "Port to connect on"
     )
-    private int port;
+    private String port = "22";
     @UriParam
-    private String directoryName;
-    @UriParam
+    @Metadata(required = "true")
     private String privateKeyFile;
 
     public ScpEndpoint(String uri, String remaining, ScpComponent component) {
         super(uri, component);
-        this.host = remaining;
+        this.remoteHostName = remaining;
     }
 
     public Producer createProducer() throws Exception {
@@ -47,7 +56,8 @@ public class ScpEndpoint extends DefaultEndpoint {
     }
 
     public Consumer createConsumer(Processor processor) throws Exception {
-        return new ScpConsumer(this, processor);
+        throw new UnsupportedOperationException("This component does not support consuming from this endpoint");
+        //return new ScpConsumer(this, processor);
     }
 
     public boolean isSingleton() {

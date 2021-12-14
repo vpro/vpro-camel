@@ -22,8 +22,8 @@ public class ScpConsumer extends ScheduledPollConsumer {
         Exchange exchange = endpoint.createExchange();
 
         // create a message body
-        Date now = new Date();
-        exchange.getIn().setBody("Hello World! The time is " + now);
+        final String fileName = "/home/molenaar/Downloads/Pajama_Sam.png";
+        exchange.getIn().setBody(fileName);
 
         try {
             // send message to next processor in the route

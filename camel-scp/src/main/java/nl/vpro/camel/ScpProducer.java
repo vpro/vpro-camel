@@ -8,6 +8,8 @@ import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultProducer;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Level;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import nl.vpro.logging.Log4j2OutputStream;
 import nl.vpro.util.CommandExecutor;
@@ -34,13 +36,14 @@ public class ScpProducer extends DefaultProducer {
         this.endpoint = endpoint;
     }
 
-    public void process(Exchange exchange) throws Exception {
+    public void process(@NonNull Exchange exchange) throws Exception {
         final InputStream inputStream = exchange.getIn().getBody(InputStream.class);
         final String fileName = exchange.getIn().getHeader(Exchange.FILE_NAME, String.class);
+        // TODO: handle header = null
         send(inputStream, fileName);
     }
 
-    private void send(final InputStream inputStream, final String fileName) throws IOException {
+    private void send(@NonNull final InputStream inputStream, @NonNull final String fileName) throws IOException {
         File sourceFile = File.createTempFile(ScpProducer.class.getName(), "tmp");
         try (OutputStream outputStream = new FileOutputStream(sourceFile)) {
             IOUtils.copy(inputStream, outputStream);
@@ -61,11 +64,21 @@ public class ScpProducer extends DefaultProducer {
                 port,
                 "-i",
                 privateKeyFile.getAbsolutePath(),
+                "-o",
+                "ConnectTimeout 20",
+                "-o",
+                "StrictHostKeyChecking no",
+                "-o",
+                "UserKnownHostsFile /dev/null",
                 sourceFile.getAbsolutePath(), // source
-                remoteUser + "@" + remoteHostName + ":" + remotePath + "/" + fileName // destination
+                remoteUser + "@" + remoteHostName + ":" + remotePath + "/" + fileName // destination,
             ) != 0) {
                 throw new Ssh.SshException("Failed to send input stream to  " + remoteHostName + ":" + remotePath + " and port " + port);
             }
+        }
+        catch(Exception e) {
+            log.error(e.getMessage());
+            throw e;
         }
         finally {
             sourceFile.delete();

@@ -57,7 +57,6 @@ public class ScpEndpoint extends DefaultEndpoint {
 
     public Consumer createConsumer(Processor processor) throws Exception {
         throw new UnsupportedOperationException("This component does not support consuming from this endpoint");
-        //return new ScpConsumer(this, processor);
     }
 
     public boolean isSingleton() {

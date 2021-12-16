@@ -3,6 +3,7 @@ package nl.vpro.camel;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.*;
+import java.nio.file.Files;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultProducer;
@@ -79,7 +80,7 @@ public class ScpProducer extends DefaultProducer {
             }
         }
         finally {
-            sourceFile.delete();
+            Files.delete(sourceFile.toPath());
         }
     }
 

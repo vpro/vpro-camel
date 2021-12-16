@@ -76,10 +76,6 @@ public class ScpProducer extends DefaultProducer {
                 throw new Ssh.SshException("Failed to send input stream to  " + remoteHostName + ":" + remotePath + " and port " + port);
             }
         }
-        catch(Exception e) {
-            log.error(e.getMessage());
-            throw e;
-        }
         finally {
             sourceFile.delete();
         }

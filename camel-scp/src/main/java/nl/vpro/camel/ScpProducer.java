@@ -39,7 +39,9 @@ public class ScpProducer extends DefaultProducer {
     public void process(@NonNull Exchange exchange) throws Exception {
         final InputStream inputStream = exchange.getIn().getBody(InputStream.class);
         final String fileName = exchange.getIn().getHeader(Exchange.FILE_NAME, String.class);
-        // TODO: handle header = null
+        if (fileName == null || fileName.equals("")) {
+            throw new IllegalArgumentException("Filename can't be empty");
+        }
         send(inputStream, fileName);
     }
 

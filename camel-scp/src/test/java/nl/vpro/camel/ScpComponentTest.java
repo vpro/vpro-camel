@@ -35,7 +35,7 @@ import org.junit.Test;
 public class ScpComponentTest extends CamelTestSupport {
     @Produce(uri = "direct:testinput")
     protected ProducerTemplate input;
-
+    private final String FILENAME = "test123";
     private ScpEventListener scpEventListener;
     private SshServer sshd;
     private Path scpRoot;
@@ -53,8 +53,6 @@ public class ScpComponentTest extends CamelTestSupport {
         FileUtils.deleteDirectory(scpRoot.toFile());
     }
 
-    private final String FILENAME = "test123";
-
     @Test
     public void testScp() throws Exception {
         addDefaultRoutesBuilder();
@@ -63,11 +61,26 @@ public class ScpComponentTest extends CamelTestSupport {
             sshd.start();
             MockEndpoint mock = getMockEndpoint("mock:result");
             mock.expectedMinimumMessageCount(1);
-            input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)), Exchange.FILE_NAME, "test123");
+            input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)),
+                Exchange.FILE_NAME, FILENAME);
             assertMockEndpointsSatisfied();
             // Make sure the file was correctly transferred
             assertEquals("/" + FILENAME, scpEventListener.getFile().toString());
             assertEquals(10, scpEventListener.getLength());
+        } finally {
+            sshd.stop();
+        }
+    }
+
+    @Test(expected = CamelExecutionException.class)
+    public void testIncorrectHeader() throws Exception {
+        addDefaultRoutesBuilder();
+        try {
+            sshd.start();
+            MockEndpoint mock = getMockEndpoint("mock:result");
+            mock.expectedMinimumMessageCount(1);
+            input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)),
+                "nonexistent", FILENAME);
         } finally {
             sshd.stop();
         }
@@ -80,7 +93,8 @@ public class ScpComponentTest extends CamelTestSupport {
             sshd.start();
             MockEndpoint mock = getMockEndpoint("mock:result");
             mock.expectedMinimumMessageCount(1);
-            input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)), Exchange.FILE_NAME, "test123");
+            input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)),
+                Exchange.FILE_NAME, FILENAME);
         } finally {
             sshd.stop();
         }
@@ -93,7 +107,8 @@ public class ScpComponentTest extends CamelTestSupport {
             sshd.start();
             MockEndpoint mock = getMockEndpoint("mock:result");
             mock.expectedMinimumMessageCount(1);
-            input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)), Exchange.FILE_NAME, "test123");
+            input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)),
+                Exchange.FILE_NAME, FILENAME);
         } finally {
             sshd.stop();
         }
@@ -106,7 +121,8 @@ public class ScpComponentTest extends CamelTestSupport {
             sshd.start();
             MockEndpoint mock = getMockEndpoint("mock:result");
             mock.expectedMinimumMessageCount(1);
-            input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)), Exchange.FILE_NAME, "test123");
+            input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)),
+                Exchange.FILE_NAME, FILENAME);
         } finally {
             sshd.stop();
         }
@@ -119,7 +135,8 @@ public class ScpComponentTest extends CamelTestSupport {
             sshd.start();
             MockEndpoint mock = getMockEndpoint("mock:result");
             mock.expectedMinimumMessageCount(1);
-            input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)), Exchange.FILE_NAME, "test123");
+            input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)),
+                Exchange.FILE_NAME, FILENAME);
         } finally {
             sshd.stop();
         }
@@ -129,7 +146,8 @@ public class ScpComponentTest extends CamelTestSupport {
         addRoutesBuilder("localhost", 2222, "test", "src/main/resources/id_rsa");
     }
 
-    private void addRoutesBuilder(final String host, final int port, final String user, final String privateKeyFile) throws Exception {
+    private void addRoutesBuilder(final String host, final int port,
+                                  final String user, final String privateKeyFile) throws Exception {
         context.addRoutes(new RouteBuilder() {
             public void configure() {
                 from("direct:testinput")

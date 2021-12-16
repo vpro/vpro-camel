@@ -57,7 +57,6 @@ public class ScpComponentTest extends CamelTestSupport {
     public void testScp() throws Exception {
         addDefaultRoutesBuilder();
         try {
-            log.info("Start ssh-server");
             sshd.start();
             MockEndpoint mock = getMockEndpoint("mock:result");
             mock.expectedMinimumMessageCount(1);
@@ -160,8 +159,14 @@ public class ScpComponentTest extends CamelTestSupport {
         });
     }
 
+    /**
+     * Setup SSH-server in memory
+     * @param scpRoot Root-directory for the SSH-server (linked to local file system)
+     * @param scpTransferEventListener Event listener for transferred files
+     * @return SshServer
+     */
     private SshServer configureSshServer(final Path scpRoot,
-                                         final ScpTransferEventListener scpTransferEventListener) throws IOException {
+                                         final ScpTransferEventListener scpTransferEventListener) {
         final SshServer sshd = SshServer.setUpDefaultServer();
         log.debug("Ssh-server filesystem-root is {}", scpRoot);
         sshd.setHost("localhost");
@@ -171,12 +176,16 @@ public class ScpComponentTest extends CamelTestSupport {
         ScpCommandFactory factory = new ScpCommandFactory.Builder().build();
         factory.addEventListener(scpTransferEventListener);
         sshd.setCommandFactory(factory);
+        // Pass key for test-purposes
         sshd.setPublickeyAuthenticator(
             new UserAuthorizedKeysAuthenticator(new File("src/main/resources/id_rsa.pub").toPath(), "test"));
         sshd.setFileSystemFactory(new VirtualFileSystemFactory(scpRoot));
         return sshd;
     }
 
+    /**
+     * Get file and length from SCP'd files
+     */
     @Getter
     private class ScpEventListener implements ScpTransferEventListener {
 
@@ -192,6 +201,9 @@ public class ScpComponentTest extends CamelTestSupport {
         }
     }
 
+    /**
+     * This class allows us to check if the user that wants to connect is the correct user
+     */
     private static class UserAuthorizedKeysAuthenticator extends AuthorizedKeysAuthenticator {
         private final String username;
 

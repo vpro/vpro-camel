@@ -1,11 +1,20 @@
 package nl.vpro.camel;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Objects;
 import java.util.function.BooleanSupplier;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 import org.apache.camel.*;
 import org.apache.camel.spi.*;
 import org.apache.camel.support.DefaultEndpoint;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 /**
  * Represents a Scp endpoint.
@@ -15,11 +24,18 @@ import org.apache.camel.support.DefaultEndpoint;
  * 'jsch' e.g. simply didn't support the server in our use case.
  *
  */
-@UriEndpoint(firstVersion = "1.3.2-SNAPSHOT", scheme = "scp", title = "Scp", syntax="scp:username@host:port/privateKeyFile",
-             producerOnly = true, category = Category.FILE)
+@UriEndpoint(
+    firstVersion = "1.3.2",
+    scheme = "scp",
+    title = "Scp",
+    syntax="scp:username@host:port/privateKeyFile",
+    producerOnly = true,
+    category = Category.FILE
+)
 @UriParams
 @Getter
 @Setter
+@Log4j2
 public class ScpEndpoint extends DefaultEndpoint {
     @UriParam(
         label = "Remote host",
@@ -78,19 +94,35 @@ public class ScpEndpoint extends DefaultEndpoint {
     @Metadata(required = false)
     private boolean useUserKnownHostsFile = true;
 
-    public ScpEndpoint(String uri, String remaining, ScpComponent component) {
+
+    @Getter
+    @MonotonicNonNull
+    private File actualPrivateKeyFile;
+    @Getter
+    @MonotonicNonNull
+    private String userHosts;
+
+    public ScpEndpoint(String uri, String remaining, ScpComponent component) throws IOException {
         super(uri, component);
         this.remoteHostName = remaining;
     }
 
+
+    @Override
     public Producer createProducer() throws Exception {
+        if (actualPrivateKeyFile == null) {
+            this.actualPrivateKeyFile = createActualPrivateKeyFile();
+            this.userHosts = createUserHosts();
+        }
         return new ScpProducer(this);
     }
 
+    @Override
     public Consumer createConsumer(Processor processor) throws Exception {
         throw new UnsupportedOperationException("This component does not support consuming from this endpoint");
     }
 
+    @Override
     public boolean isSingleton() {
         return true;
     }
@@ -113,5 +145,60 @@ public class ScpEndpoint extends DefaultEndpoint {
         public boolean getAsBoolean() {
             return booleanValue;
         }
+    }
+
+    private File createActualPrivateKeyFile() throws IOException {
+        final File privateKeyFile;
+
+        if (StringUtils.isNotBlank(getPrivateKeyFile())) {
+            if (getPrivateKeyFile().startsWith("env:")) {
+                privateKeyFile = File.createTempFile(ScpProducer.class.getSimpleName(), "id");
+                String propName = getPrivateKeyFile().substring(("env:".length()));
+                String value = System.getProperty(propName, System.getenv(propName));
+                if (value == null) {
+                    throw new IllegalArgumentException("No system property found " + propName);
+                }
+                try (FileOutputStream outputStream = new FileOutputStream(privateKeyFile)){
+                    IOUtils.write(value.getBytes(StandardCharsets.UTF_8), outputStream);
+                }
+                Files.setPosixFilePermissions(privateKeyFile.toPath(), PosixFilePermissions.fromString("r--------"));
+                log.info("Created  private key file {} ({} bytes)", privateKeyFile, privateKeyFile.length());
+            } else {
+                privateKeyFile = new File(getPrivateKeyFile());
+            }
+            if (!privateKeyFile.exists() || !privateKeyFile.isFile()) {
+                throw new IllegalArgumentException("Private key file " + privateKeyFile.getAbsolutePath() + " does not exist or is not a file");
+            }
+        } else {
+            byte[] privateKeyBytes = getPrivateKeyBytes();
+            if (privateKeyBytes == null){
+                throw new IllegalStateException("No private key file nor private key bytes configured");
+            }
+            privateKeyFile = File.createTempFile(ScpProducer.class.getSimpleName(), "id");
+            privateKeyFile.deleteOnExit();
+        }
+        return privateKeyFile;
+    }
+
+    private String createUserHosts() throws IOException {
+        String userHosts = getKnownHostsFile();
+        if (userHosts == null) {
+            if (isUseUserKnownHostsFile()) {
+                userHosts = System.getProperty("user.home") + ".ssh/known_hosts";
+            } else {
+                userHosts = "/dev/null";
+            }
+        } else if (userHosts.startsWith("classpath:")) {
+            final File tmpFile = File.createTempFile(ScpProducer.class.getSimpleName() + ".userHosts", ".tmp");
+            tmpFile.deleteOnExit();
+            try (FileOutputStream output = new FileOutputStream(tmpFile)) {
+                IOUtils.copy(Objects.requireNonNull(ScpProducer.class.getResourceAsStream("/" + userHosts.substring("classpath:".length()))), output);
+            }
+            userHosts = tmpFile.getAbsolutePath();
+            log.info("Temporary created {}", userHosts);
+        } else {
+            log.info("Using {}", userHosts);
+        }
+        return userHosts;
     }
 }

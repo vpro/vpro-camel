@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.camel.*;
@@ -12,6 +13,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
 import org.apache.sshd.common.session.Session;
 import org.apache.sshd.scp.common.ScpTransferEventListener;
@@ -140,28 +142,55 @@ public class ScpComponentTest extends CamelTestSupport {
 
     }
 
+
+    @Test
+    public void testEnv() throws Exception {
+        byte[] bytes = IOUtils.resourceToByteArray("/id_rsa");
+        System.setProperty("key", new String(bytes));
+        addRoutesBuilder(u -> u + "&privateKeyFile=env:key");
+
+        MockEndpoint mock = getMockEndpoint("mock:result");
+        mock.expectedMinimumMessageCount(1);
+        input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)),
+            Exchange.FILE_NAME, FILENAME);
+    }
+
     private void addDefaultRoutesBuilder() throws Exception {
         addRoutesBuilder("localhost", 2222, "test", "src/test/resources/id_rsa");
     }
 
-    private void addRoutesBuilder(final String host, final int port,
-                                  final String user, final String privateKeyFile) throws Exception {
-
-        Files.setPosixFilePermissions(Paths.get(privateKeyFile), PosixFilePermissions.fromString("r--------"));
+    private void addRoutesBuilder(final String host,
+                                  final int port,
+                                  final String user, UnaryOperator<String> appendMore) throws Exception {
 
         context.addRoutes(new RouteBuilder() {
+            @Override
             public void configure() {
                 from("direct:testinput")
-                    .to("scp://" + host
-                            + "?remotePath=/&port=" + port
-                            + "&remoteUser=" + user
-                            + "&privateKeyFile=" + privateKeyFile
-                            + "&strictHostKeyChecking=no" // TODO, make test for yes
+                    .to(appendMore.apply("scp://" + host
+                        + "?remotePath=/&port=" + port
+                        + "&remoteUser=" + user)
                     )
                     .to("mock:result");
             }
         });
     }
+
+    private void addRoutesBuilder(final String host,
+                                  final int port,
+                                  final String user, String privateKeyFile) throws Exception {
+        Files.setPosixFilePermissions(Paths.get(privateKeyFile), PosixFilePermissions.fromString("r--------"));
+        addRoutesBuilder(host, port, user, (u) -> u + "&privateKeyFile=" + privateKeyFile
+                            + "&strictHostKeyChecking=no");
+
+    }
+
+    private void addRoutesBuilder(UnaryOperator<String> appendMore) throws Exception {
+        addRoutesBuilder("localhost", 2222, "test", appendMore);
+    }
+
+
+
 
     /**
      * Setup SSH-server in memory
@@ -197,8 +226,7 @@ public class ScpComponentTest extends CamelTestSupport {
         private long length;
 
         public void startFileEvent(
-            Session session, FileOperation op, Path file, long length, Set<PosixFilePermission> perms)
-            throws IOException {
+            Session session, FileOperation op, Path file, long length, Set<PosixFilePermission> perms) {
             log.info("Incoming file: {}", file);
             this.file = file;
             this.length = length;

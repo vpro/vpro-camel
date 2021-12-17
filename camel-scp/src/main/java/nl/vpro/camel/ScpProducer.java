@@ -1,7 +1,9 @@
 package nl.vpro.camel;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Objects;
 import lombok.extern.log4j.Log4j2;
 import nl.vpro.logging.Log4j2OutputStream;
@@ -88,7 +90,16 @@ public class ScpProducer extends DefaultProducer {
         final File privateKeyFile;
 
         if (StringUtils.isNotBlank(endpoint.getPrivateKeyFile())) {
-            privateKeyFile = new File(endpoint.getPrivateKeyFile());
+            if (endpoint.getPrivateKeyFile().startsWith("env:")) {
+                privateKeyFile = File.createTempFile(ScpProducer.class.getSimpleName(), "id");
+                try (FileOutputStream outputStream = new FileOutputStream(privateKeyFile)){
+                    IOUtils.write(System.getProperty(endpoint.getPrivateKeyFile().substring(("env:".length()))).getBytes(StandardCharsets.UTF_8), outputStream);
+                }
+                Files.setPosixFilePermissions(privateKeyFile.toPath(), PosixFilePermissions.fromString("r--------"));
+                log.info("Created  private key file {} ({} bytes)", privateKeyFile, privateKeyFile.length());
+            } else {
+                privateKeyFile = new File(endpoint.getPrivateKeyFile());
+            }
             if (!privateKeyFile.exists() || !privateKeyFile.isFile()) {
                 throw new IllegalArgumentException("Private key file " + privateKeyFile.getAbsolutePath() + " does not exist or is not a file");
             }

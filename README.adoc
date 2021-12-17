@@ -1,4 +1,5 @@
 = vpro-camel
+:toc:
 
 image:https://github.com/vpro/vpro-camel/workflows/build/badge.svg?[Build Status,link=https://github.com/vpro/vpro-camel/actions?query=workflow%3Abuild]
 image:https://img.shields.io/maven-central/v/nl.vpro.camel/camel-parent.svg?label=Maven%20Central[Maven Central,link=https://search.maven.org/search?q=g:%22nl.vpro.camel%22]
@@ -9,3 +10,11 @@ image:https://img.shields.io/nexus/s/https/oss.sonatype.org/nl.vpro.camel/camel-
 == Camel components
 
 We are using some custom made camel components.
+
+=== Camel filewatcher
+
+=== Camel SCP
+
+An alternative to camel-jsch. Jsch is old and not very well supported.
+
+This uses command line 'scp', which is very robust and very well tested. Much more so than jsch, or sshj.

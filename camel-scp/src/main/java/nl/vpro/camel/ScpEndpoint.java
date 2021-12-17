@@ -57,12 +57,13 @@ public class ScpEndpoint extends DefaultEndpoint {
     )
     @Metadata(required = true)
     private String remotePath;
+
     @UriParam(
         label = "port",
         defaultValue = "22",
         description = "Port to connect on"
     )
-    private String port = "22";
+    private int port = 22;
 
     @UriParam
     @Metadata(required = false)
@@ -90,7 +91,7 @@ public class ScpEndpoint extends DefaultEndpoint {
     private String knownHostsFile;
 
 
-    @UriParam(name = "useUserKnownHostsFile")
+    @UriParam
     @Metadata(required = false)
     private boolean useUserKnownHostsFile = true;
 
@@ -102,7 +103,7 @@ public class ScpEndpoint extends DefaultEndpoint {
     @MonotonicNonNull
     private String userHosts;
 
-    public ScpEndpoint(String uri, String remaining, ScpComponent component) throws IOException {
+    public ScpEndpoint(String uri, String remaining, ScpComponent component) {
         super(uri, component);
         this.remoteHostName = remaining;
     }

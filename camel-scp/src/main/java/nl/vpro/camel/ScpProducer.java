@@ -1,28 +1,22 @@
 package nl.vpro.camel;
 
-import lombok.extern.log4j.Log4j2;
-
 import java.io.*;
 import java.nio.file.Files;
-
+import java.util.Objects;
+import lombok.extern.log4j.Log4j2;
+import nl.vpro.logging.Log4j2OutputStream;
+import nl.vpro.util.*;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultProducer;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.Level;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-
-import nl.vpro.logging.Log4j2OutputStream;
-import nl.vpro.util.CommandExecutor;
-import nl.vpro.util.CommandExecutorImpl;
-import nl.vpro.util.Ssh;
 
 /**
  * The Scp producer.
  */
 @Log4j2
 public class ScpProducer extends DefaultProducer {
-    private ScpEndpoint endpoint;
+    private final ScpEndpoint endpoint;
 
     private static final OutputStream STDOUT = Log4j2OutputStream.debug(log, true);
     private static final OutputStream STDERR = Log4j2OutputStream.error(log, true);
@@ -60,7 +54,21 @@ public class ScpProducer extends DefaultProducer {
             if (!privateKeyFile.exists() || !privateKeyFile.isFile()) {
                 throw new IllegalArgumentException("Private key file " + privateKeyFile.getAbsolutePath() + " does not exist or is not a file");
             }
-            if (scp.execute(
+            String userHosts = endpoint.getKnownHostsFile();
+            if (userHosts == null) {
+                userHosts = "/dev/null";
+            } else if (userHosts.startsWith("classpath:")) {
+                File tmpFile = File.createTempFile(ScpProducer.class.getSimpleName() + ".userHosts", ".tmp");
+                tmpFile.deleteOnExit();
+                try (FileOutputStream output = new FileOutputStream(tmpFile)) {
+                    IOUtils.copy(Objects.requireNonNull(getClass().getResourceAsStream("/" + userHosts.substring("classpath:".length()))), output);
+                }
+                userHosts = tmpFile.getAbsolutePath();
+                log.info("Temporary created {}", userHosts);
+            } else {
+                log.info("Using {}", userHosts);
+            }
+            int exitCode = scp.execute(
                 STDOUT,
                 STDERR,
                 "-P",
@@ -68,15 +76,16 @@ public class ScpProducer extends DefaultProducer {
                 "-i",
                 privateKeyFile.getAbsolutePath(),
                 "-o",
-                "ConnectTimeout 20",
+                "ConnectTimeout " + (endpoint.getConnectTimeout() / 1000),
                 "-o",
-                "StrictHostKeyChecking no",
+                "StrictHostKeyChecking " + endpoint.getStrictHostKeyChecking().name(),
                 "-o",
-                "UserKnownHostsFile /dev/null",
+                "UserKnownHostsFile " + userHosts,
                 sourceFile.getAbsolutePath(), // source
                 remoteUser + "@" + remoteHostName + ":" + remotePath + "/" + fileName // destination,
-            ) != 0) {
-                throw new Ssh.SshException("Failed to send input stream to  " + remoteHostName + ":" + remotePath + " and port " + port);
+            );
+            if (exitCode != 0) {
+                throw new Ssh.SshException(exitCode, "Failed to send input stream to  " + remoteHostName + ":" + remotePath + " and port " + port);
             }
         }
         finally {

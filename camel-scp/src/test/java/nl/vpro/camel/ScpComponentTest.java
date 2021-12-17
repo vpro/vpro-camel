@@ -25,9 +25,13 @@ import org.junit.*;
 public class ScpComponentTest extends CamelTestSupport {
     @Produce(uri = "direct:testinput")
     protected ProducerTemplate input;
+
     private final String FILENAME = "test123";
+
     private ScpEventListener scpEventListener;
+
     private SshServer sshd;
+
     private Path scpRoot;
 
     @Before

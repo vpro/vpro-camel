@@ -71,6 +71,11 @@ public class ScpEndpoint extends DefaultEndpoint {
     @Metadata(required = "false")
     private String knownHostsFile;
 
+
+    @UriParam(name = "useUserKnownHostsFile")
+    @Metadata(required = "false")
+    private boolean useUserKnownHostsFile = true;
+
     public ScpEndpoint(String uri, String remaining, ScpComponent component) {
         super(uri, component);
         this.remoteHostName = remaining;

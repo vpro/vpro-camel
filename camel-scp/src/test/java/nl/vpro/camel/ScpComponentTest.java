@@ -141,9 +141,11 @@ public class ScpComponentTest extends CamelTestSupport {
             public void configure() {
                 from("direct:testinput")
                     .to("scp://" + host
-                        + "?remotePath=/&port=" + port
-                        + "&remoteUser=" + user
-                        + "&privateKeyFile=" + privateKeyFile)
+                            + "?remotePath=/&port=" + port
+                            + "&remoteUser=" + user
+                            + "&privateKeyFile=" + privateKeyFile
+                            + "&strictHostKeyChecking=no" // TODO, make test for yes
+                    )
                     .to("mock:result");
             }
         });

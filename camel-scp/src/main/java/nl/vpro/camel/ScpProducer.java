@@ -16,11 +16,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  */
 @Log4j2
 public class ScpProducer extends DefaultProducer {
-    private final ScpEndpoint endpoint;
 
     private static final OutputStream STDOUT = Log4j2OutputStream.debug(log, true);
     private static final OutputStream STDERR = Log4j2OutputStream.error(log, true);
 
+    private final ScpEndpoint endpoint;
     private final CommandExecutor scp = CommandExecutorImpl
         .builder()
         .executablesPaths("/local/bin/scp", "/usr/bin/scp")
@@ -41,7 +41,7 @@ public class ScpProducer extends DefaultProducer {
     }
 
     private void send(@NonNull final InputStream inputStream, @NonNull final String fileName) throws IOException {
-        File sourceFile = File.createTempFile(ScpProducer.class.getName(), "tmp");
+        final File sourceFile = File.createTempFile(ScpProducer.class.getName(), "tmp");
         try (OutputStream outputStream = new FileOutputStream(sourceFile)) {
             IOUtils.copy(inputStream, outputStream);
         }
@@ -56,9 +56,13 @@ public class ScpProducer extends DefaultProducer {
             }
             String userHosts = endpoint.getKnownHostsFile();
             if (userHosts == null) {
-                userHosts = "/dev/null";
+                if (endpoint.isUseUserKnownHostsFile()) {
+                    userHosts = System.getProperty("user.home") + ".ssh/known_hosts";
+                } else {
+                    userHosts = "/dev/null";
+                }
             } else if (userHosts.startsWith("classpath:")) {
-                File tmpFile = File.createTempFile(ScpProducer.class.getSimpleName() + ".userHosts", ".tmp");
+                final File tmpFile = File.createTempFile(ScpProducer.class.getSimpleName() + ".userHosts", ".tmp");
                 tmpFile.deleteOnExit();
                 try (FileOutputStream output = new FileOutputStream(tmpFile)) {
                     IOUtils.copy(Objects.requireNonNull(getClass().getResourceAsStream("/" + userHosts.substring("classpath:".length()))), output);

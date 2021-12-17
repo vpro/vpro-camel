@@ -38,8 +38,7 @@
     <!-- testing -->
     <dependency>
       <groupId>org.apache.camel</groupId>
-      <artifactId>camel-test</artifactId>
-      <scope>test</scope>
+      <artifactId>camel-test-junit5</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.sshd</groupId>

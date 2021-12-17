@@ -6,10 +6,11 @@ import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.util.Set;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import org.apache.camel.*;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.junit4.CamelTestSupport;
+import org.apache.camel.test.junit5.CamelTestSupport;
 import org.apache.commons.io.FileUtils;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
 import org.apache.sshd.common.session.Session;
@@ -19,115 +20,119 @@ import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.config.keys.AuthorizedKeysAuthenticator;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.session.ServerSession;
-import org.junit.*;
 
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+@Log4j2
 public class ScpComponentTest extends CamelTestSupport {
-    @Produce(uri = "direct:testinput")
+    @Produce("direct:testinput")
     protected ProducerTemplate input;
     private final String FILENAME = "test123";
     private ScpEventListener scpEventListener;
     private SshServer sshd;
     private Path scpRoot;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         scpEventListener = new ScpEventListener();
         scpRoot = Files.createTempDirectory("scp_tmp");
         sshd = configureSshServer(scpRoot, scpEventListener);
+        sshd.start();
+
     }
 
-    @After
+    @AfterEach
     public void shutdown() throws IOException {
         // Cleanup files
         FileUtils.deleteDirectory(scpRoot.toFile());
+        sshd.stop();
     }
 
     @Test
     public void testScp() throws Exception {
         addDefaultRoutesBuilder();
-        try {
-            sshd.start();
-            MockEndpoint mock = getMockEndpoint("mock:result");
-            mock.expectedMinimumMessageCount(1);
-            input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)),
-                Exchange.FILE_NAME, FILENAME);
-            assertMockEndpointsSatisfied();
-            // Make sure the file was correctly transferred
-            assertEquals("/" + FILENAME, scpEventListener.getFile().toString());
-            assertEquals(10, scpEventListener.getLength());
-        } finally {
-            sshd.stop();
-        }
+
+        MockEndpoint mock = getMockEndpoint("mock:result");
+        mock.expectedMinimumMessageCount(1);
+        input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)),
+            Exchange.FILE_NAME, FILENAME);
+        assertMockEndpointsSatisfied();
+        // Make sure the file was correctly transferred
+        assertEquals("/" + FILENAME, scpEventListener.getFile().toString());
+        assertEquals(10, scpEventListener.getLength());
     }
 
-    @Test(expected = CamelExecutionException.class)
+    @Test
     public void testIncorrectHeader() throws Exception {
         addDefaultRoutesBuilder();
-        try {
-            sshd.start();
-            MockEndpoint mock = getMockEndpoint("mock:result");
-            mock.expectedMinimumMessageCount(1);
-            input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)),
-                "nonexistent", FILENAME);
-        } finally {
-            sshd.stop();
-        }
+
+        assertThrows(CamelExecutionException.class, () -> {
+
+            try {
+                sshd.start();
+                MockEndpoint mock = getMockEndpoint("mock:result");
+                mock.expectedMinimumMessageCount(1);
+                input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)),
+                    "nonexistent", FILENAME);
+            } finally {
+                sshd.stop();
+            }
+            }
+        );
     }
 
-    @Test(expected = CamelExecutionException.class)
+    @Test
     public void testIncorrectHost() throws Exception {
         addRoutesBuilder("incorrecthost", 2222, "test", "src/test/resources/id_rsa");
-        try {
-            sshd.start();
-            MockEndpoint mock = getMockEndpoint("mock:result");
-            mock.expectedMinimumMessageCount(1);
-            input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)),
-                Exchange.FILE_NAME, FILENAME);
-        } finally {
-            sshd.stop();
-        }
+        assertThrows(CamelExecutionException.class, () -> {
+            try {
+                sshd.start();
+                MockEndpoint mock = getMockEndpoint("mock:result");
+                mock.expectedMinimumMessageCount(1);
+                input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)),
+                    Exchange.FILE_NAME, FILENAME);
+            } finally {
+                sshd.stop();
+            }
+        });
     }
 
-    @Test(expected = CamelExecutionException.class)
+    @Test
     public void testIncorrectPort() throws Exception {
         addRoutesBuilder("localhost", 2223, "test", "src/test/resources/id_rsa");
-        try {
-            sshd.start();
+        assertThrows(CamelExecutionException.class, () -> {
+
             MockEndpoint mock = getMockEndpoint("mock:result");
             mock.expectedMinimumMessageCount(1);
             input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)),
                 Exchange.FILE_NAME, FILENAME);
-        } finally {
-            sshd.stop();
-        }
+        });
     }
 
-    @Test(expected = CamelExecutionException.class)
+    @Test
     public void testIncorrectUser() throws Exception {
         addRoutesBuilder("localhost", 2222, "billgates", "src/test/resources/id_rsa");
-        try {
-            sshd.start();
+        assertThrows(CamelExecutionException.class, () -> {
+
             MockEndpoint mock = getMockEndpoint("mock:result");
             mock.expectedMinimumMessageCount(1);
             input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)),
                 Exchange.FILE_NAME, FILENAME);
-        } finally {
-            sshd.stop();
-        }
+        });
     }
 
-    @Test(expected = CamelExecutionException.class)
+    @Test
     public void testIncorrectKey() throws Exception {
         addRoutesBuilder("localhost", 2222, "test", "src/test/resources/wrong_id_rsa");
-        try {
-            sshd.start();
+        assertThrows(CamelExecutionException.class, () -> {
             MockEndpoint mock = getMockEndpoint("mock:result");
             mock.expectedMinimumMessageCount(1);
             input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)),
                 Exchange.FILE_NAME, FILENAME);
-        } finally {
-            sshd.stop();
-        }
+        });
+
     }
 
     private void addDefaultRoutesBuilder() throws Exception {
@@ -181,7 +186,7 @@ public class ScpComponentTest extends CamelTestSupport {
      * Get file and length from SCP'd files
      */
     @Getter
-    private class ScpEventListener implements ScpTransferEventListener {
+    private static class ScpEventListener implements ScpTransferEventListener {
 
         private Path file;
         private long length;

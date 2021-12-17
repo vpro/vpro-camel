@@ -8,6 +8,8 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.camel.*;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -24,6 +26,7 @@ import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.session.ServerSession;
 import org.junit.*;
 
+@Slf4j
 public class ScpComponentTest extends CamelTestSupport {
     @Produce(uri = "direct:testinput")
     protected ProducerTemplate input;

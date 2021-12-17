@@ -8,12 +8,12 @@ import java.util.Objects;
 import java.util.function.BooleanSupplier;
 import lombok.Getter;
 import lombok.Setter;
-
-import lombok.extern.log4j.Log4j2;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.camel.spi.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +32,7 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 @UriParams
 @Getter
 @Setter
-@Log4j2
+@Slf4j
 public class ScpEndpoint extends DefaultEndpoint {
     @UriParam(
         label = "Remote host",
@@ -179,7 +179,7 @@ public class ScpEndpoint extends DefaultEndpoint {
         String userHosts = getKnownHostsFile();
         if (userHosts == null) {
             if (isUseUserKnownHostsFile()) {
-                userHosts = System.getProperty("user.home") + ".ssh/known_hosts";
+                userHosts = System.getProperty("user.home") + "/.ssh/known_hosts";
             } else {
                 userHosts = "/dev/null";
             }

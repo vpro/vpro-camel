@@ -2,8 +2,8 @@ package nl.vpro.camel;
 
 import java.io.*;
 import java.nio.file.Files;
-import lombok.extern.log4j.Log4j2;
-import nl.vpro.logging.Log4j2OutputStream;
+import lombok.extern.slf4j.Slf4j;
+import nl.vpro.logging.LoggerOutputStream;
 import nl.vpro.util.*;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultProducer;
@@ -13,11 +13,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 /**
  * The Scp producer.
  */
-@Log4j2
+@Slf4j
 public class ScpProducer extends DefaultProducer {
 
-    private static final OutputStream STDOUT = Log4j2OutputStream.debug(log, true);
-    private static final OutputStream STDERR = Log4j2OutputStream.error(log, true);
+    private static final OutputStream STDOUT = LoggerOutputStream.debug(log, true);
+    private static final OutputStream STDERR = LoggerOutputStream.error(log, true);
 
     private final ScpEndpoint endpoint;
     private final CommandExecutor scp = CommandExecutorImpl

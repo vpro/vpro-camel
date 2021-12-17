@@ -39,12 +39,12 @@ public class ScpProducer extends DefaultProducer {
         if (fileName == null || fileName.equals("")) {
             throw new IllegalArgumentException("Filename can't be empty");
         }
-        send(inputStream, fileName);
+        exchange.getIn().setHeader(Exchange.FILE_NAME_PRODUCED, send(inputStream, fileName));
     }
 
 
 
-    private void send(@NonNull final InputStream inputStream, @NonNull final String fileName) throws IOException {
+    private String send(@NonNull final InputStream inputStream, @NonNull final String fileName) throws IOException {
         final File sourceFile = File.createTempFile(ScpProducer.class.getName(), "tmp");
         try (OutputStream outputStream = new FileOutputStream(sourceFile)) {
             IOUtils.copy(inputStream, outputStream);
@@ -55,6 +55,7 @@ public class ScpProducer extends DefaultProducer {
             final String remotePath = endpoint.getRemotePath();
             final int port = endpoint.getPort();
 
+            final String produced = remotePath + "/"+ fileName;
             int exitCode = scp.execute(
                 STDOUT,
                 STDERR,
@@ -69,11 +70,12 @@ public class ScpProducer extends DefaultProducer {
                 "-o",
                 "UserKnownHostsFile " + endpoint.getUserHosts(),
                 sourceFile.getAbsolutePath(), // source
-                remoteUser + "@" + remoteHostName + ":" + remotePath + "/" + fileName // destination,
+                remoteUser + "@" + remoteHostName + ":" + produced // destination,
             );
             if (exitCode != 0) {
                 throw new Ssh.SshException(exitCode, "Failed to send input stream to  " + remoteHostName + ":" + remotePath + " and port " + port);
             }
+            return produced;
         }
         finally {
             Files.delete(sourceFile.toPath());

@@ -1,36 +1,26 @@
 package nl.vpro.camel;
 
-import lombok.Getter;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Set;
-
-import org.apache.camel.CamelExecutionException;
-import org.apache.camel.Exchange;
-import org.apache.camel.Produce;
-import org.apache.camel.ProducerTemplate;
+import lombok.Getter;
+import org.apache.camel.*;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.apache.commons.io.FileUtils;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
 import org.apache.sshd.common.session.Session;
-import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.scp.common.ScpTransferEventListener;
 import org.apache.sshd.scp.server.ScpCommandFactory;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.config.keys.AuthorizedKeysAuthenticator;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.session.ServerSession;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 public class ScpComponentTest extends CamelTestSupport {
     @Produce(uri = "direct:testinput")
@@ -129,7 +119,7 @@ public class ScpComponentTest extends CamelTestSupport {
 
     @Test(expected = CamelExecutionException.class)
     public void testIncorrectKey() throws Exception {
-        addRoutesBuilder("localhost", 2222, "test", "src/main/resources/wrong_id_rsa");
+        addRoutesBuilder("localhost", 2222, "test", "src/test/resources/wrong_id_rsa");
         try {
             sshd.start();
             MockEndpoint mock = getMockEndpoint("mock:result");
@@ -142,7 +132,7 @@ public class ScpComponentTest extends CamelTestSupport {
     }
 
     private void addDefaultRoutesBuilder() throws Exception {
-        addRoutesBuilder("localhost", 2222, "test", "src/main/resources/id_rsa");
+        addRoutesBuilder("localhost", 2222, "test", "src/test/resources/id_rsa");
     }
 
     private void addRoutesBuilder(final String host, final int port,
@@ -178,7 +168,7 @@ public class ScpComponentTest extends CamelTestSupport {
         sshd.setCommandFactory(factory);
         // Pass key for test-purposes
         sshd.setPublickeyAuthenticator(
-            new UserAuthorizedKeysAuthenticator(new File("src/main/resources/id_rsa.pub").toPath(), "test"));
+            new UserAuthorizedKeysAuthenticator(new File("src/test/resources/id_rsa.pub").toPath(), "test"));
         sshd.setFileSystemFactory(new VirtualFileSystemFactory(scpRoot));
         return sshd;
     }

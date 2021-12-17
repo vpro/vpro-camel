@@ -2,9 +2,9 @@ package nl.vpro.camel;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Set;
 import lombok.Getter;
 import org.apache.camel.*;
@@ -77,7 +77,7 @@ public class ScpComponentTest extends CamelTestSupport {
 
     @Test(expected = CamelExecutionException.class)
     public void testIncorrectHost() throws Exception {
-        addRoutesBuilder("incorrecthost", 2222, "test", "src/main/resources/id_rsa");
+        addRoutesBuilder("incorrecthost", 2222, "test", "src/test/resources/id_rsa");
         try {
             sshd.start();
             MockEndpoint mock = getMockEndpoint("mock:result");
@@ -91,7 +91,7 @@ public class ScpComponentTest extends CamelTestSupport {
 
     @Test(expected = CamelExecutionException.class)
     public void testIncorrectPort() throws Exception {
-        addRoutesBuilder("localhost", 2223, "test", "src/main/resources/id_rsa");
+        addRoutesBuilder("localhost", 2223, "test", "src/test/resources/id_rsa");
         try {
             sshd.start();
             MockEndpoint mock = getMockEndpoint("mock:result");
@@ -105,7 +105,7 @@ public class ScpComponentTest extends CamelTestSupport {
 
     @Test(expected = CamelExecutionException.class)
     public void testIncorrectUser() throws Exception {
-        addRoutesBuilder("localhost", 2222, "billgates", "src/main/resources/id_rsa");
+        addRoutesBuilder("localhost", 2222, "billgates", "src/test/resources/id_rsa");
         try {
             sshd.start();
             MockEndpoint mock = getMockEndpoint("mock:result");
@@ -137,6 +137,8 @@ public class ScpComponentTest extends CamelTestSupport {
 
     private void addRoutesBuilder(final String host, final int port,
                                   final String user, final String privateKeyFile) throws Exception {
+        Files.setPosixFilePermissions(Paths.get(privateKeyFile), PosixFilePermissions.fromString("r--------"));
+
         context.addRoutes(new RouteBuilder() {
             public void configure() {
                 from("direct:testinput")

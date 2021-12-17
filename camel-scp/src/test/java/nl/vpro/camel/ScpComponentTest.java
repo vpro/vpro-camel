@@ -27,11 +27,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Log4j2
 public class ScpComponentTest extends CamelTestSupport {
+
     @Produce("direct:testinput")
     protected ProducerTemplate input;
+
     private final String FILENAME = "test123";
+
     private ScpEventListener scpEventListener;
+
     private SshServer sshd;
+
     private Path scpRoot;
 
     @BeforeEach

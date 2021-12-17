@@ -49,8 +49,13 @@ public class ScpEndpoint extends DefaultEndpoint {
     private String port = "22";
 
     @UriParam
-    @Metadata(required = true)
+    @Metadata(required = false)
     private String privateKeyFile;
+
+
+    @UriParam
+    @Metadata(required = false)
+    private byte[] privateKeyBytes;
 
 
     @UriParam

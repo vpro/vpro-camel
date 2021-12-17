@@ -9,6 +9,7 @@ import nl.vpro.util.*;
 import org.apache.camel.Exchange;
 import org.apache.camel.support.DefaultProducer;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -26,9 +27,14 @@ public class ScpProducer extends DefaultProducer {
         .executablesPaths("/local/bin/scp", "/usr/bin/scp")
         .build();
 
-    public ScpProducer(ScpEndpoint endpoint) {
+    private final File privateKeyFile;
+    private final String userHosts;
+
+    public ScpProducer(ScpEndpoint endpoint) throws IOException {
         super(endpoint);
         this.endpoint = endpoint;
+        this.privateKeyFile = getPrivateKeyFile(endpoint);
+        this.userHosts = getUserHosts(endpoint);
     }
 
     public void process(@NonNull Exchange exchange) throws Exception {
@@ -40,6 +46,8 @@ public class ScpProducer extends DefaultProducer {
         send(inputStream, fileName);
     }
 
+
+
     private void send(@NonNull final InputStream inputStream, @NonNull final String fileName) throws IOException {
         final File sourceFile = File.createTempFile(ScpProducer.class.getName(), "tmp");
         try (OutputStream outputStream = new FileOutputStream(sourceFile)) {
@@ -50,28 +58,7 @@ public class ScpProducer extends DefaultProducer {
             final String remoteUser = endpoint.getRemoteUser();
             final String remotePath = endpoint.getRemotePath();
             final String port = endpoint.getPort();
-            final File privateKeyFile = new File(endpoint.getPrivateKeyFile());
-            if (!privateKeyFile.exists() || !privateKeyFile.isFile()) {
-                throw new IllegalArgumentException("Private key file " + privateKeyFile.getAbsolutePath() + " does not exist or is not a file");
-            }
-            String userHosts = endpoint.getKnownHostsFile();
-            if (userHosts == null) {
-                if (endpoint.isUseUserKnownHostsFile()) {
-                    userHosts = System.getProperty("user.home") + ".ssh/known_hosts";
-                } else {
-                    userHosts = "/dev/null";
-                }
-            } else if (userHosts.startsWith("classpath:")) {
-                final File tmpFile = File.createTempFile(ScpProducer.class.getSimpleName() + ".userHosts", ".tmp");
-                tmpFile.deleteOnExit();
-                try (FileOutputStream output = new FileOutputStream(tmpFile)) {
-                    IOUtils.copy(Objects.requireNonNull(getClass().getResourceAsStream("/" + userHosts.substring("classpath:".length()))), output);
-                }
-                userHosts = tmpFile.getAbsolutePath();
-                log.info("Temporary created {}", userHosts);
-            } else {
-                log.info("Using {}", userHosts);
-            }
+
             int exitCode = scp.execute(
                 STDOUT,
                 STDERR,
@@ -97,6 +84,46 @@ public class ScpProducer extends DefaultProducer {
         }
     }
 
+    private static File getPrivateKeyFile(ScpEndpoint endpoint) throws IOException {
+        final File privateKeyFile;
+
+        if (StringUtils.isNotBlank(endpoint.getPrivateKeyFile())) {
+            privateKeyFile = new File(endpoint.getPrivateKeyFile());
+            if (!privateKeyFile.exists() || !privateKeyFile.isFile()) {
+                throw new IllegalArgumentException("Private key file " + privateKeyFile.getAbsolutePath() + " does not exist or is not a file");
+            }
+        } else {
+            byte[] privateKeyBytes = endpoint.getPrivateKeyBytes();
+            if (privateKeyBytes == null){
+                throw new IllegalStateException("No private key file nor private key bytes configured");
+            }
+            privateKeyFile = File.createTempFile(ScpProducer.class.getSimpleName(), "id");
+            privateKeyFile.deleteOnExit();
+        }
+        return privateKeyFile;
+    }
+
+    private static String getUserHosts(ScpEndpoint endpoint) throws IOException {
+          String userHosts = endpoint.getKnownHostsFile();
+        if (userHosts == null) {
+            if (endpoint.isUseUserKnownHostsFile()) {
+                userHosts = System.getProperty("user.home") + ".ssh/known_hosts";
+            } else {
+                userHosts = "/dev/null";
+            }
+        } else if (userHosts.startsWith("classpath:")) {
+            final File tmpFile = File.createTempFile(ScpProducer.class.getSimpleName() + ".userHosts", ".tmp");
+            tmpFile.deleteOnExit();
+            try (FileOutputStream output = new FileOutputStream(tmpFile)) {
+                IOUtils.copy(Objects.requireNonNull(ScpProducer.class.getResourceAsStream("/" + userHosts.substring("classpath:".length()))), output);
+            }
+            userHosts = tmpFile.getAbsolutePath();
+            log.info("Temporary created {}", userHosts);
+        } else {
+            log.info("Using {}", userHosts);
+        }
+        return userHosts;
+    }
 }
 
 

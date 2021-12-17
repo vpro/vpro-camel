@@ -7,7 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import nl.vpro.logging.Log4j2OutputStream;
 import nl.vpro.util.*;
 import org.apache.camel.Exchange;
-import org.apache.camel.impl.DefaultProducer;
+import org.apache.camel.support.DefaultProducer;
 import org.apache.commons.io.IOUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 

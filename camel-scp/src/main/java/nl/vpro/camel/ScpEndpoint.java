@@ -3,12 +3,9 @@ package nl.vpro.camel;
 import java.util.function.BooleanSupplier;
 import lombok.Getter;
 import lombok.Setter;
-
-import org.apache.camel.Consumer;
-import org.apache.camel.Processor;
-import org.apache.camel.Producer;
-import org.apache.camel.impl.DefaultEndpoint;
+import org.apache.camel.*;
 import org.apache.camel.spi.*;
+import org.apache.camel.support.DefaultEndpoint;
 
 /**
  * Represents a Scp endpoint.
@@ -19,7 +16,7 @@ import org.apache.camel.spi.*;
  *
  */
 @UriEndpoint(firstVersion = "1.3.2-SNAPSHOT", scheme = "scp", title = "Scp", syntax="scp:username@host:port/privateKeyFile",
-             producerOnly = true, label = "file")
+             producerOnly = true, category = Category.FILE)
 @UriParams
 @Getter
 @Setter
@@ -28,21 +25,21 @@ public class ScpEndpoint extends DefaultEndpoint {
         label = "Remote host",
         description = "Remote host where the file(s) should be transferred to"
     )
-    @Metadata(required = "true")
+    @Metadata(required = true)
     private String remoteHostName;
 
     @UriParam(
         label = "Remote user",
         description = "Remote user with access to the remote host"
     )
-    @Metadata(required = "true")
+    @Metadata(required = true)
     private String remoteUser;
 
     @UriParam(
         label = "Remote path",
         description = "Location on the remote host where the file(s) should be transferred to"
     )
-    @Metadata(required = "true")
+    @Metadata(required = true)
     private String remotePath;
     @UriParam(
         label = "port",
@@ -52,28 +49,28 @@ public class ScpEndpoint extends DefaultEndpoint {
     private String port = "22";
 
     @UriParam
-    @Metadata(required = "true")
+    @Metadata(required = true)
     private String privateKeyFile;
 
 
     @UriParam
-    @Metadata(required = "false", defaultValue = "no")
+    @Metadata(required = false, defaultValue = "no")
     private YesNo strictHostKeyChecking = YesNo.no;
 
 
     @UriParam
-    @Metadata(required = "false")
+    @Metadata(required = false)
     private int connectTimeout = 10000;
 
 
 
     @UriParam
-    @Metadata(required = "false")
+    @Metadata(required = false)
     private String knownHostsFile;
 
 
     @UriParam(name = "useUserKnownHostsFile")
-    @Metadata(required = "false")
+    @Metadata(required = false)
     private boolean useUserKnownHostsFile = true;
 
     public ScpEndpoint(String uri, String remaining, ScpComponent component) {

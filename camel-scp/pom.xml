@@ -6,7 +6,7 @@
   <parent>
     <artifactId>camel-parent</artifactId>
     <groupId>nl.vpro.camel</groupId>
-    <version>1.3.2-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
   </parent>
 
   <artifactId>camel-scp</artifactId>
@@ -17,10 +17,6 @@
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-test</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>

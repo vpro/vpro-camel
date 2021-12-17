@@ -21,9 +21,5 @@
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-test-junit5</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-api</artifactId>
-    </dependency>
   </dependencies>
 </project>

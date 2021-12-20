@@ -1,14 +1,17 @@
 package nl.vpro.camel;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.*;
 import java.nio.file.Files;
-import lombok.extern.slf4j.Slf4j;
-import nl.vpro.logging.LoggerOutputStream;
-import nl.vpro.util.*;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultProducer;
 import org.apache.commons.io.IOUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import nl.vpro.logging.LoggerOutputStream;
+import nl.vpro.util.*;
 
 /**
  * The Scp producer.
@@ -20,18 +23,18 @@ public class ScpProducer extends DefaultProducer {
     private static final OutputStream STDERR = LoggerOutputStream.error(log, true);
 
     private final ScpEndpoint endpoint;
-    private final CommandExecutor scp = CommandExecutorImpl
-        .builder()
-        .executablesPaths("/local/bin/scp", "/usr/bin/scp")
-        .build();
-
-
+    private final CommandExecutor scp;
 
     public ScpProducer(ScpEndpoint endpoint) {
         super(endpoint);
         this.endpoint = endpoint;
+        scp = CommandExecutorImpl.builder()
+            .executablesPaths(endpoint.getScpExecutables().split("\\s*,\\s*"))
+            .logger(log)
+            .build();
 
     }
+
 
     public void process(@NonNull Exchange exchange) throws Exception {
         final InputStream inputStream = exchange.getIn().getBody(InputStream.class);

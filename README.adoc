@@ -27,4 +27,10 @@ This uses command line 'scp', which is very robust and very well tested. Much mo
 
 It is more or less a drop in replacement for `camel-jsch` itself.
 
+A few details are different
+
+- `connectTimeout`: also accepts ISO_8601 durations like `PT30s` (which can be simplified to `T30s` or `30s`)
+- `privateKeyFile`: may also pick up the key from the environment when prefixed with 'env:'
+
+
 

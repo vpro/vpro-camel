@@ -26,8 +26,14 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
  * 'jsch' e.g. simply didn't support the server in our use case.
  *
  */
-@UriEndpoint(firstVersion = "1.3.2-SNAPSHOT", scheme = "scp", title = "Scp", syntax="scp:username@host:port/privateKeyFile",
-             producerOnly = true, label = "file")
+@UriEndpoint(
+    firstVersion = "1.3.2",
+    scheme = "scp",
+    title = "Scp",
+    syntax="scp:username@host:port/privateKeyFile",
+    producerOnly = true,
+    label = "file"
+)
 @UriParams
 @Getter
 @Setter
@@ -75,9 +81,10 @@ public class ScpEndpoint extends DefaultEndpoint {
     @Metadata(required = "false", defaultValue = "no")
     private YesNo strictHostKeyChecking = YesNo.no;
 
+
     @UriParam
     @Metadata(required = "false")
-    private int connectTimeout = 10000;
+    private String connectTimeout = "10s";
 
     @UriParam
     @Metadata(required = "false")

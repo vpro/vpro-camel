@@ -1,5 +1,8 @@
 package nl.vpro.camel;
 
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
@@ -7,8 +10,6 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Set;
 import java.util.function.UnaryOperator;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.camel.*;
 import org.apache.camel.builder.RouteBuilder;
@@ -170,8 +171,10 @@ public class ScpComponentTest extends CamelTestSupport {
             public void configure() {
                 from("direct:testinput")
                     .to(appendMore.apply("scp://" + host
-                        + "?remotePath=/&port=" + port
-                        + "&remoteUser=" + user)
+                            + "?remotePath=/&port=" + port
+                            + "&remoteUser=" + user
+                            + "&connectTimeout=30000"
+                        )
                     )
                     .to("mock:result");
             }

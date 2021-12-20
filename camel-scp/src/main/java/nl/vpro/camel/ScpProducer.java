@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.time.Duration;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.support.DefaultProducer;
@@ -67,7 +68,7 @@ public class ScpProducer extends DefaultProducer {
                 "-i",
                 endpoint.getActualPrivateKeyFile().getAbsolutePath(),
                 "-o",
-                "ConnectTimeout " + (endpoint.getConnectTimeout() / 1000),
+                "ConnectTimeout " + (TimeUtils.parseDuration(endpoint.getConnectTimeout()).orElse(Duration.ofSeconds(10)).getSeconds()),
                 "-o",
                 "StrictHostKeyChecking " + endpoint.getStrictHostKeyChecking().name(),
                 "-o",

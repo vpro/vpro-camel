@@ -172,8 +172,10 @@ public class ScpComponentTest extends CamelTestSupport {
             public void configure() {
                 from("direct:testinput")
                     .to(appendMore.apply("scp://" + host
-                        + "?remotePath=/&port=" + port
-                        + "&remoteUser=" + user)
+                            + "?remotePath=/&port=" + port
+                            + "&remoteUser=" + user
+                            + "&connectTimeout=30000"
+                        )
                     )
                     .to("mock:result");
             }

@@ -84,7 +84,7 @@ public class ScpEndpoint extends DefaultEndpoint {
 
     @UriParam
     @Metadata(required = false)
-    private int connectTimeout = 10000;
+    private String connectTimeout = "10000";
 
     @UriParam
     @Metadata(required = false)

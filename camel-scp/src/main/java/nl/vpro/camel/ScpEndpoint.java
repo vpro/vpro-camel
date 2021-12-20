@@ -1,14 +1,16 @@
 package nl.vpro.camel;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.camel.*;
 import org.apache.camel.spi.*;
 import org.apache.camel.support.DefaultEndpoint;
@@ -84,8 +86,6 @@ public class ScpEndpoint extends DefaultEndpoint {
     @Metadata(required = false)
     private int connectTimeout = 10000;
 
-
-
     @UriParam
     @Metadata(required = false)
     private String knownHostsFile;
@@ -95,13 +95,18 @@ public class ScpEndpoint extends DefaultEndpoint {
     @Metadata(required = false)
     private boolean useUserKnownHostsFile = true;
 
+    @UriParam
+    @Metadata(required = false, defaultValue = "/local/bin/scp,/usr/bin/scp")
+    private String scpExecutables =  "/local/bin/scp,/usr/bin/scp";
 
     @Getter
     @MonotonicNonNull
     private File actualPrivateKeyFile;
+
     @Getter
     @MonotonicNonNull
     private String userHosts;
+
 
     public ScpEndpoint(String uri, String remaining, ScpComponent component) {
         super(uri, component);
@@ -119,7 +124,7 @@ public class ScpEndpoint extends DefaultEndpoint {
     }
 
     @Override
-    public Consumer createConsumer(Processor processor) throws Exception {
+    public Consumer createConsumer(Processor processor) {
         throw new UnsupportedOperationException("This component does not support consuming from this endpoint");
     }
 
@@ -127,7 +132,6 @@ public class ScpEndpoint extends DefaultEndpoint {
     public boolean isSingleton() {
         return true;
     }
-
 
     /**
      * yes/no, to be compatible with https://camel.apache.org/components/3.7.x/scp-component.html

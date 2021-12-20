@@ -27,7 +27,7 @@ public class ScpProducer extends DefaultProducer {
 
 
 
-    public ScpProducer(ScpEndpoint endpoint) throws IOException {
+    public ScpProducer(ScpEndpoint endpoint) {
         super(endpoint);
         this.endpoint = endpoint;
 

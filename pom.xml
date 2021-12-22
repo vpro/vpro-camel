@@ -40,16 +40,13 @@
     </developer>
   </developers>
 
-
-  <ciManagement>
-    <system>Travis CI</system>
-    <url>https://travis-ci.org/vpro/vpro-camel</url>
+ <ciManagement>
+    <system>GitHub Workflow</system>
+    <url>https://github.com/vpro/vpro-camel/actions</url>
   </ciManagement>
-
-
   <scm>
-    <connection>scm:git:git://git@github.com/vpro/vpro-camel.git</connection>
-    <developerConnection>scm:git:git@github.com:vpro/vpro-camel.git</developerConnection>
+    <connection>scm:git:${project.scm.url}</connection>
+    <developerConnection>scm:git:${project.scm.url}</developerConnection>
     <url>https://github.com/vpro/vpro-camel</url>
     <tag>HEAD</tag>
   </scm>

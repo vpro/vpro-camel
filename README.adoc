@@ -11,19 +11,18 @@ image:https://codecov.io/gh/vpro/vpro-camel/branch/main/graph/badge.svg[codecov,
 
 == Camel components
 
-We are using some custom made camel components.
+We are using some custom-made camel components.
 
 === Camel filewatcher
 
 Supports 'file watching'.
 
 
-
 === Camel SCP
 
-An alternative to camel-jsch. Jsch is old and not very well supported.
+An alternative to `camel-jsch`. Jsch is old and not very well-supported.
 
-This uses command line 'scp', which is very robust and very well tested. Much more so than jsch, or sshj.
+This module uses command line 'scp', which is very robust and very well tested. Much more so than jsch, or sshj.
 
 It is more or less a drop in replacement for `camel-jsch` itself.
 

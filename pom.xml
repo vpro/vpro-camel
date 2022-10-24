@@ -4,7 +4,7 @@
 
   <groupId>nl.vpro.camel</groupId>
   <artifactId>camel-parent</artifactId>
-  <version>1.3.3</version>
+  <version>1.3.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>VPRO Apache Camel components</name>
   <inceptionYear>2012</inceptionYear>
@@ -48,7 +48,7 @@
     <connection>scm:git:${project.scm.url}</connection>
     <developerConnection>scm:git:${project.scm.url}</developerConnection>
     <url>https://github.com/vpro/vpro-camel</url>
-    <tag>REL-1.3.3</tag>
+    <tag>REL-1.3-SNAPSHOT</tag>
   </scm>
 
   <properties>

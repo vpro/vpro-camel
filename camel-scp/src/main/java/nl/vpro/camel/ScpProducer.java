@@ -14,6 +14,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import nl.vpro.logging.LoggerOutputStream;
 import nl.vpro.util.*;
 
+import static org.apache.commons.text.StringEscapeUtils.escapeXSI;
+
 /**
  * The Scp producer.
  */
@@ -74,7 +76,7 @@ public class ScpProducer extends DefaultProducer {
                 "-o",
                 "UserKnownHostsFile " + endpoint.getUserHosts(),
                 sourceFile.getAbsolutePath(), // source
-                remoteUser + "@" + remoteHostName + ":" + produced // destination,
+                remoteUser + "@" + remoteHostName + ":" + escapeXSI(produced) // destination,
             );
             if (exitCode != 0) {
                 throw new Ssh.SshException(exitCode, "Failed to send input stream to  " + remoteHostName + ":" + remotePath + " and port " + port);

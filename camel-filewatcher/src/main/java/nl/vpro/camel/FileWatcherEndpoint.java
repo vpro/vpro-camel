@@ -43,7 +43,7 @@ class FileWatcherEndpoint extends DefaultEndpoint {
     @Override
     public Consumer createConsumer(Processor processor) {
         FileWatcherConsumer consumer = new FileWatcherConsumer(this, processor);
-        LOG.info("Created {}", consumer,  new Exception());
+        LOG.info("Created {}", consumer);
         return consumer;
     }
 

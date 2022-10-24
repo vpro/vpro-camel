@@ -33,7 +33,7 @@ public class ScpProducer extends DefaultProducer {
         this.endpoint = endpoint;
         scp = CommandExecutorImpl.builder()
             .executablesPaths(endpoint.getScpExecutables().split("\\s*,\\s*"))
-            .logger(log)
+            .slf4j(log)
             .build();
 
     }

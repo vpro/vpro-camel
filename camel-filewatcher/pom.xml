@@ -10,7 +10,7 @@
 
   <artifactId>camel-filewatcher</artifactId>
 
-  <name>camel-filewatcher</name>
+  <name>Camel Filewatcher plugin</name>
 
   <dependencies>
     <dependency>

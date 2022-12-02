@@ -9,7 +9,8 @@
   </parent>
 
   <artifactId>camel-newrelic</artifactId>
-  <name>camel-relic</name>
+  <name>Camel Newrelic plugin</name>
+
 
   <dependencies>
     <dependency>

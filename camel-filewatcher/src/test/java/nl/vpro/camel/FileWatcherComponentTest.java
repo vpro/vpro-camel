@@ -19,13 +19,17 @@ package nl.vpro.camel;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.List;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit5.CamelTestSupport;
+import org.junit.jupiter.api.*;
+
+import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
+import static org.apache.camel.component.mock.MockEndpoint.resetMocks;
 import static org.apache.camel.test.junit5.TestSupport.assertInMessageBodyEquals;
 import static org.apache.camel.test.junit5.TestSupport.assertInMessageHeader;
-import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -63,12 +67,12 @@ public class FileWatcherComponentTest extends CamelTestSupport {
         mock.expectedMinimumMessageCount(1);
         List<Exchange> exchanges = mock.getExchanges();
 
-        assertMockEndpointsSatisfied();
+        assertIsSatisfied(context);
         assertInMessageHeader(exchanges.get(0), "fileWatchEvent", "STARTED");
         assertInMessageBodyEquals(exchanges.get(0), "Hello world");
 
         // Updated
-        resetMocks();
+        resetMocks(context);
 
         FileWriter w1 = new FileWriter(file);
         w1.write("Update");
@@ -77,24 +81,24 @@ public class FileWatcherComponentTest extends CamelTestSupport {
         mock.expectedMinimumMessageCount(1);
         exchanges = mock.getExchanges();
 
-        assertMockEndpointsSatisfied();
+        assertIsSatisfied(context);
         assertInMessageHeader(exchanges.get(0), "fileWatchEvent", "UPDATED");
         assertInMessageBodyEquals(exchanges.get(0), "Update");
 
         // Deleted
-        resetMocks();
+        resetMocks(context);
 
         file.delete();
 
         mock.expectedMinimumMessageCount(1);
         exchanges = mock.getExchanges();
 
-        assertMockEndpointsSatisfied();
+        assertIsSatisfied(context);
         assertInMessageHeader(exchanges.get(0), "fileWatchEvent", "DELETED");
         assertNull(exchanges.get(0).getIn().getBody());
 
         // Created
-        resetMocks();
+        resetMocks(context);
 
         FileWriter w2 = new FileWriter(file);
         w2.write("Created");
@@ -103,7 +107,7 @@ public class FileWatcherComponentTest extends CamelTestSupport {
         mock.expectedMinimumMessageCount(1);
         exchanges = mock.getExchanges();
 
-        assertMockEndpointsSatisfied();
+        assertIsSatisfied(context);
         assertInMessageHeader(exchanges.get(0), "fileWatchEvent", "CREATED");
         assertInMessageBodyEquals(exchanges.get(0), "Created");
     }

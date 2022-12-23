@@ -27,6 +27,7 @@ import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.session.ServerSession;
 import org.junit.jupiter.api.*;
 
+import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -69,7 +70,7 @@ public class ScpComponentTest extends CamelTestSupport {
         mock.expectedMinimumMessageCount(1);
         input.sendBodyAndHeader(new ByteArrayInputStream("some input".getBytes(StandardCharsets.UTF_8)),
             Exchange.FILE_NAME, FILENAME);
-        assertMockEndpointsSatisfied();
+        assertIsSatisfied(context);
         // Make sure the file was correctly transferred
         assertEquals("/" + FILENAME, scpEventListener.getFile().toString());
         assertEquals(10, scpEventListener.getLength());

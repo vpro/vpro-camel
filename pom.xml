@@ -60,7 +60,7 @@
   </scm>
 
   <properties>
-    <camel.version>3.20.0</camel.version>
+    <camel.version>3.20.1</camel.version>
     <newrelic.version>7.11.1</newrelic.version>
     <log4j.version>2.19.0</log4j.version>
     <vpro.shared.version>3.1-SNAPSHOT</vpro.shared.version>
@@ -139,7 +139,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.0.0-M7</version>
+          <version>3.0.0-M8</version>
           <configuration>
             <testFailureIgnore>true</testFailureIgnore>
           </configuration>

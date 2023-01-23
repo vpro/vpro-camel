@@ -3,22 +3,18 @@ name: build pull request
 
 on:
   pull_request:
-    branches: [master]
+    branches: [main]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    env:
-      MAVEN_OPTS: -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     steps:
-      - uses: getong/elasticsearch-action@v1.2
-        with:
-          elasticsearch version: '7.6.1'
       - uses: actions/checkout@v3
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 1.8
+          distribution: 'temurin'
+          java-version: 17
+          cache: maven
       - name: Build with Maven
-        run: mvn -fae -DskipITs=false -Dinteg.cluster.name=docker-elasticsearch -B  package
+        run: mvn -ntp -fae -DskipITs=false -Dinteg.cluster.name=docker-elasticsearch -B  package

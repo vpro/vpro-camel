@@ -5,7 +5,7 @@
   <parent>
     <artifactId>camel-parent</artifactId>
     <groupId>nl.vpro.camel</groupId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.6-SNAPSHOT</version>
   </parent>
 
   <artifactId>camel-filewatcher</artifactId>

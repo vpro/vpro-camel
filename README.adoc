@@ -31,5 +31,7 @@ A few details are different
 - `connectTimeout`: also accepts ISO_8601 durations like `PT30s` (which can be simplified to `T30s` or `30s`)
 - `privateKeyFile`: may also pick up the key from the environment when prefixed with 'env:'
 
+=== Camel newrelic
 
+Provides some integration with https://newrelic.com[newrelic].
 

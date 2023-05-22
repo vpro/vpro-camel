@@ -63,8 +63,8 @@
     <camel.version>3.20.4</camel.version>
     <newrelic.version>8.2.0</newrelic.version>
     <log4j.version>2.20.0</log4j.version>
-    <vpro.shared.version>3.4.0</vpro.shared.version>
-    <apache.mina.sshd.version>2.9.2</apache.mina.sshd.version>
+    <vpro.shared.version>3.5.0</vpro.shared.version>
+    <apache.mina.sshd.version>2.10.0</apache.mina.sshd.version>
   </properties>
 
   <build>

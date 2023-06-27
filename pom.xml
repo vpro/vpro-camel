@@ -60,10 +60,10 @@
   </scm>
 
   <properties>
-    <camel.version>3.20.4</camel.version>
-    <newrelic.version>8.2.0</newrelic.version>
+    <camel.version>3.20.6</camel.version>
+    <newrelic.version>8.4.0</newrelic.version>
     <log4j.version>2.20.0</log4j.version>
-    <vpro.shared.version>3.5.0</vpro.shared.version>
+    <vpro.shared.version>3.5.3</vpro.shared.version>
     <apache.mina.sshd.version>2.10.0</apache.mina.sshd.version>
   </properties>
 
@@ -203,7 +203,7 @@
       <dependency>
         <groupId>org.projectlombok</groupId>
         <artifactId>lombok</artifactId>
-        <version>1.18.26</version>
+        <version>1.18.28</version>
         <scope>compile</scope>
       </dependency>
     </dependencies>

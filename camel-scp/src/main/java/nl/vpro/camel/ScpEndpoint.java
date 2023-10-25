@@ -20,9 +20,9 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 /**
  * Represents a Scp endpoint.
- *
+ * <p>
  * This is completely inspired by the default camel-scp endpoint. It just uses the much more robust, and better tested 'scp' command line tool.
- *
+ * <p>
  * 'jsch' e.g. simply didn't support the server in our use case.
  *
  */

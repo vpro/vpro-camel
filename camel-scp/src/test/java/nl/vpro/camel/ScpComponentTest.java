@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 
@@ -25,6 +26,7 @@ import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.config.keys.AuthorizedKeysAuthenticator;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.session.ServerSession;
+import org.apache.sshd.sftp.server.*;
 import org.junit.jupiter.api.*;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
@@ -52,7 +54,6 @@ public class ScpComponentTest extends CamelTestSupport {
         scpRoot = Files.createTempDirectory("scp_tmp");
         sshd = configureSshServer(scpRoot, scpEventListener);
         sshd.start();
-
     }
 
     @AfterEach
@@ -176,6 +177,7 @@ public class ScpComponentTest extends CamelTestSupport {
                             + "?remotePath=/&port=" + port
                             + "&remoteUser=" + user
                             + "&connectTimeout=30000"
+                            + "&useUserKnownHostsFile=false"
                         )
                     )
                     .to("mock:result");
@@ -206,7 +208,7 @@ public class ScpComponentTest extends CamelTestSupport {
      * @return SshServer
      */
     private SshServer configureSshServer(final Path scpRoot,
-                                         final ScpTransferEventListener scpTransferEventListener) {
+                                         final ScpEventListener scpTransferEventListener) {
         final SshServer sshd = SshServer.setUpDefaultServer();
         log.debug("Ssh-server filesystem-root is {}", scpRoot);
         sshd.setHost("localhost");
@@ -216,6 +218,11 @@ public class ScpComponentTest extends CamelTestSupport {
         ScpCommandFactory factory = new ScpCommandFactory.Builder().build();
         factory.addEventListener(scpTransferEventListener);
         sshd.setCommandFactory(factory);
+        SftpSubsystemFactory sftp = new SftpSubsystemFactory();
+        sftp.addSftpEventListener(scpTransferEventListener);
+
+        sshd.setSubsystemFactories(Arrays.asList(sftp));
+
         // Pass key for test-purposes
         sshd.setPublickeyAuthenticator(
             new UserAuthorizedKeysAuthenticator(new File("src/test/resources/id_rsa.pub").toPath(), "test"));
@@ -227,16 +234,27 @@ public class ScpComponentTest extends CamelTestSupport {
      * Get file and length from SCP'd files
      */
     @Getter
-    private static class ScpEventListener implements ScpTransferEventListener {
+    private static class ScpEventListener implements ScpTransferEventListener, SftpEventListener {
 
         private Path file;
         private long length;
 
+        @Override
         public void startFileEvent(
             Session session, FileOperation op, Path file, long length, Set<PosixFilePermission> perms) {
             log.info("Incoming file: {}", file);
             this.file = file;
             this.length = length;
+        }
+        @Override
+        public void written(
+            ServerSession session, String remoteHandle, FileHandle localHandle,
+            long offset, byte[] data, int dataOffset, int dataLen, Throwable thrown)
+            throws IOException {
+
+            log.info("{}", remoteHandle);
+            this.file = localHandle.getFile();
+            this.length = dataLen;
         }
     }
 

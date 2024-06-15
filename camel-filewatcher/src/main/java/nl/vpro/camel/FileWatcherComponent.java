@@ -28,7 +28,7 @@ public class FileWatcherComponent extends DefaultComponent {
 
     @Override
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
-        Endpoint endpoint = new FileWatcherEndpoint(uri, this);
+        Endpoint endpoint = new FileWatcherEndpoint(getCamelContext(), uri, this);
         setProperties(endpoint, parameters);
         return endpoint;
     }

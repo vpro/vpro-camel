@@ -16,14 +16,12 @@
  */
 package nl.vpro.camel.newrelic;
 
-import org.apache.camel.Consumer;
-import org.apache.camel.Processor;
-import org.apache.camel.Producer;
-import org.apache.camel.support.DefaultConsumer;
-import org.apache.camel.support.DefaultEndpoint;
-
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.apache.camel.*;
+import org.apache.camel.support.DefaultConsumer;
+import org.apache.camel.support.DefaultEndpoint;
 
 /**
  * @author Roelof Jan Koekoek
@@ -32,8 +30,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 class TraceEndpoint extends DefaultEndpoint {
     private final CopyOnWriteArrayList<DefaultConsumer> consumers = new CopyOnWriteArrayList<>();
 
-    TraceEndpoint(String uri, TraceComponent component) {
+    TraceEndpoint(CamelContext context, String uri, TraceComponent component) {
         super(uri, component);
+        setCamelContext(context);
     }
 
     @Override

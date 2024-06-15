@@ -16,16 +16,16 @@
  */
 package nl.vpro.camel.newrelic;
 
+import java.util.Map;
+
 import org.apache.camel.Endpoint;
 import org.apache.camel.support.DefaultComponent;
-
-import java.util.Map;
 
 public class TraceComponent extends DefaultComponent {
 
     @Override
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
-        Endpoint endpoint = new TraceEndpoint(uri, this);
+        Endpoint endpoint = new TraceEndpoint(getCamelContext(), uri, this);
         setProperties(endpoint, parameters);
         return endpoint;
     }

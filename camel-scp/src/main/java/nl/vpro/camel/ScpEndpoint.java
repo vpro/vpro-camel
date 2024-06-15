@@ -108,9 +108,10 @@ public class ScpEndpoint extends DefaultEndpoint {
     private String userHosts;
 
 
-    public ScpEndpoint(String uri, String remaining, ScpComponent component) {
+    public ScpEndpoint(CamelContext context, String uri, String remaining, ScpComponent component) {
         super(uri, component);
         this.remoteHostName = remaining;
+        setCamelContext(context);
     }
 
 

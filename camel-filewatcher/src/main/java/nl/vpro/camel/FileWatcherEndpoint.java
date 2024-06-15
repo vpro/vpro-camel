@@ -16,9 +16,7 @@
  */
 package nl.vpro.camel;
 
-import org.apache.camel.Consumer;
-import org.apache.camel.Processor;
-import org.apache.camel.Producer;
+import org.apache.camel.*;
 import org.apache.camel.support.DefaultEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +29,9 @@ class FileWatcherEndpoint extends DefaultEndpoint {
     private static final Logger LOG = LoggerFactory.getLogger(FileWatcherEndpoint.class);
 
 
-    FileWatcherEndpoint(String uri, FileWatcherComponent component) {
+    FileWatcherEndpoint(CamelContext camelContext, String uri, FileWatcherComponent component) {
         super(uri, component);
+        setCamelContext(camelContext);
     }
 
     @Override

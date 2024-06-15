@@ -11,7 +11,7 @@ public class ScpComponent extends DefaultComponent {
 
     @Override
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
-        Endpoint endpoint = new ScpEndpoint(uri, remaining, this);
+        Endpoint endpoint = new ScpEndpoint(getCamelContext(), uri, remaining, this);
         setProperties(endpoint, parameters);
         return endpoint;
     }

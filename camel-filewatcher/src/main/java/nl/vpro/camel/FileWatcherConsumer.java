@@ -18,10 +18,10 @@ package nl.vpro.camel;
 
 import java.io.File;
 import java.net.URI;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.camel.support.DefaultEndpoint;
-import org.apache.camel.support.DefaultScheduledPollConsumer;
+import org.apache.camel.support.*;
 import org.apache.camel.util.FileUtil;
 
 public class FileWatcherConsumer extends DefaultScheduledPollConsumer {
@@ -37,6 +37,7 @@ public class FileWatcherConsumer extends DefaultScheduledPollConsumer {
 
     FileWatcherConsumer(DefaultEndpoint endpoint, Processor processor) {
         super(endpoint, processor);
+        setPollStrategy(new DefaultPollingConsumerPollStrategy());
     }
 
     @Override
